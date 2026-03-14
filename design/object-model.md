@@ -11,8 +11,24 @@ The shared nouns of the sunj-labs ecosystem. Same word everywhere — code, issu
 | **Tool** | A callable capability with typed params, declared secrets, and a run function | Tool registry, job queue, subprocess worker |
 | **Job** | An async execution of a tool (queued, running, completed, failed) | BullMQ, dashboard, Telegram |
 | **Trace** | An observed LLM interaction (model, tokens, cost, latency) | Langfuse |
-| **Deal** | A potential acquisition target | Deal pipeline, POA |
-| **Candidate** | An SBA 7a business listing that qualifies | POA, deal pipeline |
+| **Deal** | A potential acquisition target with financials, location, and broker info | Deal pipeline, POA |
+| **Candidate** | An SBA 7a business listing that qualifies (realized as Deal with status SHORTLISTED) | POA, deal pipeline |
+| **Search** | A reusable saved search with configurable hard/soft filters (multi-tenant) | POA, deal pipeline |
+| **SearchFilter** | A configurable filter (hard or soft with weight) belonging to a Search | POA, deal pipeline |
+| **DealScore** | A multi-dimensional score for a Deal (0-100 per dimension, versioned) | POA |
+| **DealRejection** | Why a Deal was excluded by a hard filter (filter field + reason) | POA |
+| **IndustryRubric** | NAICS-level AI-resistance + necessity scoring, living/UI-editable | POA, deal pipeline |
+| **DealReview** | A family consensus vote on a Deal (thumbs up/down/need more info) | POA |
+| **DealAnalysis** | Deep analysis result for a Deal (financial, demographic, SBA, scenario) | POA |
+| **Milestone** | A deadline with escalating alert schedule (1031, SBA, broker milestones) | POA |
+| **Professional** | A professional contact (QI, CPA, attorney, broker, lender) | POA |
+| **Communication** | An outreach draft/sent with approve/send lifecycle | POA |
+| **DealList** | A curated shortlist of deals — the collaboration surface for family/advisors | POA |
+| **DealListMember** | Scoped access to a DealList (editor/voter/viewer) | POA |
+| **CurationRecommendation** | Curator agent output: add/deprioritize/pair deals with reasoning | POA |
+| **Proforma** | Versioned financial projections for a shortlisted deal (P&L, tax, debt service) | POA |
+| **ProformaAssumption** | Tweakable input to a Proforma (growth rate, interest rate, tax rate) | POA |
+| **LocationProfile** | State-level tax/regulatory characteristics (income tax, estate tax, business rank) | POA |
 | **Service** | A running infrastructure component (app, postgres, redis, langfuse) | Ops dashboard, healthchecks |
 | **Deploy** | A production deployment (sha, status, duration) | CI/CD, ops dashboard |
 | **Backup** | A database snapshot (filename, trigger, status) | Backup scripts, ops dashboard |
