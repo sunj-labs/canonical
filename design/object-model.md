@@ -7,8 +7,8 @@ The shared nouns of the sunj-labs ecosystem. Same word everywhere — code, issu
 | Object | Description | Appears In |
 |--------|-------------|------------|
 | **User** | A person who interacts with the system (operator, collaborator, viewer) | Auth, dashboard, all apps |
-| **Agent** | A domain-scoped assistant with a system prompt, tool access, and an intent classifier | Telegram, dashboard, dispatch layer |
-| **Tool** | A callable capability with typed params, declared secrets, and a run function | Tool registry, job queue, subprocess worker |
+| **Agent** | An autonomous actor with a trigger (schedule/event/human), authority to act on objects (bounded by state diagrams), decision-making capability (rules/LLM), and side effects (DB writes, emails, job enqueue). Agents decide *when* and *how* to use tools. When 2+ agents hand off to each other, they form a core loop. | BullMQ workers, dispatch layer, all apps |
+| **Tool** | A callable capability with typed params, declared secrets, and a run function. Tools are passive — they execute when called. An agent uses tools; a tool does not use agents. | Tool registry, job queue, subprocess worker |
 | **Job** | An async execution of a tool (queued, running, completed, failed) | BullMQ, dashboard, Telegram |
 | **Trace** | An observed LLM interaction (model, tokens, cost, latency) | Langfuse |
 | **Deal** | A potential acquisition target with financials, location, and broker info | Deal pipeline, POA |

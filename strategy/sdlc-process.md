@@ -69,6 +69,41 @@ Not every initiative needs all seven diagram types. Use the table to decide:
 - **Operator scope, agentic/async**: ERD + Component + Sequence + Activity + State (required).
 - **Domain/Product scope**: All that apply.
 
+### Core Loop / Flywheel in Agentic Systems
+
+When a system has **two or more agents that hand off to each other**,
+it has a core loop. The test: does output from one agent become input
+to another? If yes, map the loop before building any individual agent.
+
+**What defines an agent** (vs. a tool or a function):
+- Has a **trigger** (schedule, event, or human request)
+- Has **authority** to act on objects (bounded by state diagrams)
+- Has **decision-making** capability (rules, LLM, or both)
+- Produces **side effects** (writes to DB, sends email, enqueues jobs)
+
+A tool is a capability that gets called. An agent decides when and
+how to use tools. The scraper *tool* parses HTML. The scraper *agent*
+decides when to run, which states to scrape, and what to do with results.
+
+**When to design the core loop:**
+- Triggered during the Design step, any time the system includes 2+ agents
+- Must be the **first activity diagram produced** — it's the map that
+  shows how all other diagrams relate to each other
+- Each segment of the loop should reference its detailed diagram
+  (sequence, activity, state)
+
+**How the core loop is used after design:**
+- Referenced in every session Reflect phase — "which segment is weakest?"
+- Includes a **status tracker** (green/yellow/red per segment) that's
+  updated as the system matures
+- Prioritization follows the loop: advance the weakest segment, not
+  the one that's easiest or most interesting
+
+Example (POA deal pipeline):
+```
+Data (scrape) → Analysis (score) → Communication (digest) → Decision (shortlist) → Feedback (refine) → Data
+```
+
 ### Object Model
 
 New objects introduced by any initiative must be registered in the
