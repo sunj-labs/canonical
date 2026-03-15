@@ -137,13 +137,65 @@ For solo operators or small teams without sprint accountability:
 
 For teams with sprint cadence: map milestones to iterations. The canvas and spec workflow sits upstream of sprint planning.
 
+## Auto-Complete / Danger Mode
+
+When running with `--dangerously-skip-permissions` (or any future
+Anthropic auto-complete mode that reduces human-in-the-loop oversight),
+the audit trail must compensate for reduced oversight:
+
+**Danger Mode Summaries** (`docs/danger-mode-summaries/YYYY-MM-DD.md`):
+- Written incrementally during the session, not just at the end
+- Captures: files changed (with why), tickets processed (status transitions),
+  decisions made, tests added/removed, commits produced
+- Compact, not verbose — the audit is the point, not the narrative
+- Committed to git periodically during long sessions
+
+**When to use danger mode:**
+- Production deployments with known-good patterns
+- Bulk implementation of well-specified stories
+- Routine maintenance (dependency updates, migrations)
+
+**When NOT to use danger mode:**
+- Architectural decisions (need discussion before action)
+- Schema changes (irreversible in production)
+- Any work touching auth, secrets, or deletion logic
+
+**The contract:** Velocity increases, but so does the documentation
+obligation. Every file touched, every ticket moved, every decision
+made — logged. The summary is the audit trail that makes velocity
+safe.
+
+## Session Chronicles
+
+Every session produces a chronicle entry in `platform-docs/chronicle/`.
+Chronicles are the narrative record of what was built, what was learned,
+how the SDLC evolved, and what skills were demonstrated.
+
+**Chronicle structure:**
+- Frontmatter: date, duration, repos, tags, skills
+- What shipped
+- What was learned
+- SDLC evolution (process changes during the session)
+- Collaboration model (how human + AI divided the work)
+- 3 post titles with 1-paragraph summaries (LinkedIn, Viva Engage, blog)
+
+**When to write:**
+- At the end of every session (manual until scribe agent ships)
+- The agent is responsible for producing the draft; the human reviews
+
+**Chronicles vs danger mode summaries:**
+- Danger mode summaries = compact audit trail (what changed, what moved)
+- Chronicles = narrative record (what was learned, what it means)
+- Both are produced when running in danger mode
+
 ## Documentation as Byproduct
 
 | Layer | What | When updated |
 |-------|------|--------------|
-| Decision records | Why decisions were made | When you make a decision |
+| Decision records (ADRs) | Why decisions were made | When you make a decision |
 | Specs | What gets built and why | Before implementation |
-| Session logs / stand-ups | What happened | Every session or daily |
+| Danger mode summaries | What changed in auto-complete sessions | During danger mode sessions |
+| Session chronicles | What happened, what was learned, post ideas | Every session end |
 | Changelog | What shipped | Every merge to main |
 | README | What this is, how to run it | When setup changes |
 
