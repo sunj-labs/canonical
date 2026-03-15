@@ -83,6 +83,14 @@ specs are written. This prevents naming drift across repos.
 4. Design diagrams are produced before specs for any initiative with async flows or multiple components.
 5. Every merge to main is deployable.
 6. Outcomes are measured, not just shipped.
+7. **Material backlog items trigger design review.** When a ticket introduces
+   new objects, agents, state machines, or external integrations, it must
+   include a "Design artifacts needed" checklist before implementation begins.
+   This applies even when the ticket originates as a task or idea mid-session
+   rather than through the formal Canvas → Spec flow. The checklist should
+   identify which artifacts need updating: object model, state diagrams,
+   sequence diagrams, specs. The ticket itself is the trigger — not the
+   formality of the intake path.
 
 ## Cadence
 
