@@ -205,14 +205,14 @@ const worker = new Worker('poa-scraper', async (job) => {
 })
 ```
 
-**Module-level mutable state is banned in agents.** Circuit breakers, caches,
-and rate limiters that live as module globals become implicit shared state when
-two agents run in the same process. Pass them as constructor arguments or scope
-them to the call.
+**Module-level mutable state is banned in agents.** State shared implicitly
+across callers becomes a hidden dependency. Pass stateful collaborators as
+arguments or scope them to the call.
 
-**The test for correct structure:** Can you import an agent module in isolation
-and call its primary function in a unit test without starting the queue, Redis,
-or any other agent? If no, the agent has leaked dependencies it doesn't own.
+**The test for correct structure:** Can you call this agent's primary function
+in a test with no knowledge of its callers or infrastructure? If no, the agent
+has leaked dependencies it doesn't own. See `design/engineering-principles.md`
+for the general form of this test.
 
 **When this pattern is triggered:** Any time a Design step produces a flywheel
 diagram with 2+ agents. The agent module structure must be defined before
