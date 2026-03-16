@@ -28,6 +28,27 @@ Interview (open-ended discovery — why does this matter?)
                           → Retrospect (decision record if architectural)
 ```
 
+## Standards Applied at Each Step
+
+The SDLC is the sequence. These are the standards that apply at each step.
+Check the relevant docs before proceeding — they are not optional reading.
+
+| Step | Apply |
+|---|---|
+| **Design** | `design/engineering-principles.md` (always) · `design/ai-design-guidelines.md` (if AI features) · `design/design-principles.md` (if UI) · `design/trust-zone-flow.md` (if agents or secrets) · `design/object-model.md` (if new objects) |
+| **Specs** | `strategy/templates/spec-template.md` |
+| **Implementation** | `standards/testing-requirements.md` · `standards/security-scanning.md` · `standards/branching-strategy.md` · `standards/commit-conventions.md` · `design/component-patterns.md` (if UI) |
+| **Code Review / CI** | `standards/security-scanning.md` (CI gate) |
+| **Diagnose** (on failure) | `standards/diagnosis.md` |
+| **Session start/end** | `strategy/session-continuity.md` |
+
+**SDLC checkpoint is a mandatory pre-build gate.** Before starting any
+implementation, identify where the initiative sits in the lifecycle above
+and confirm all upstream steps are complete. Do not proceed to build
+without this check.
+
+---
+
 ### Design Step
 
 Between Canvas/PR-FAQ and Specs, produce design diagrams that reduce
@@ -107,116 +128,13 @@ Data (scrape) → Analysis (score) → Communication (digest) → Decision (shor
 
 ### Diagnosis Step
 
-When a failure is observed and the cause is not immediately obvious, run
-diagnosis before writing any fix. **Trigger: "I don't know the root cause
-before I start fixing."**
+→ See **`standards/diagnosis.md`** for the full technique (Is/Is Not,
+Five Whys, Hypothesis + Test format).
 
-**Step 1 — Is/Is Not (bound the problem)**
+### Agentic Flywheel: Separation of Concerns
 
-Fill in the table before hypothesizing. This prevents fixing the wrong layer.
-
-| IS (failing) | IS NOT (working) |
-|---|---|
-| The specific thing that fails | The adjacent things that don't |
-
-Example: *BizBuySell detail pages time out / BizBuySell search pages succeed /
-httpbin.org succeeds* → problem is specific to how BizBuySell serves detail
-pages, not ScraperAPI connectivity.
-
-**Step 2 — Five Whys (trace the chain)**
-
-Ask why five times. Stop when you reach something you can change that prevents
-the entire class of failure, not just this instance.
-
-Example: detail pages fail → ScraperAPI IP-blocked on detail pages → no
-enrichment success rate metric → observability not built → **root cause: #21
-(observability) is the fix, not a proxy flag.**
-
-**Step 3 — Hypothesis + Test**
-
-Write the hypothesis as one sentence before touching code. Then run the
-minimum test that would falsify it. Do not open a PR until the hypothesis
-holds.
-
-Format (as a ticket comment before the fix PR):
-```
-Diagnosis:
-  IS: [what fails]
-  IS NOT: [what works]
-  Root cause (5 Whys): [chain]
-  Hypothesis: [one sentence]
-  Test: [how verified]
-  Result: [pass/fail — if fail, return to step 1]
-```
-
-**When to skip diagnosis:** Cause is immediately obvious and reproducible
-(typo, missing env var, trivial off-by-one). If in doubt, do it — the table
-takes two minutes.
-
-**Output:** Diagnosis comment on the ticket. If Five Whys reveals an
-architectural gap (missing observability, wrong abstraction layer), create a
-backlog item before closing the bug.
-
-### Agentic Flywheel: Separation of Concerns Pattern
-
-Any system with a core loop (flywheel) **must** follow this structural pattern
-before implementation begins. Violating it creates a monolith where agents
-cannot be developed, tested, or deployed independently.
-
-**The rule:** Each segment of the flywheel is a separate module. The
-orchestrator is routing-only. No exceptions.
-
-```
-flywheel segment     → one agent module
-agent module         → one primary exported function with typed input/output
-orchestrator         → imports agents, routes job types, owns lifecycle only
-queue job data types → exported inter-agent contracts, not inline definitions
-```
-
-**What each layer owns:**
-
-| Layer | Owns | Does NOT own |
-|---|---|---|
-| Agent module | Business logic, logging, DB writes, error handling | Queue connection, job scheduling, other agents |
-| Orchestrator (`start-worker.ts`) | Boot, job routing, scheduler registration, shutdown | Business logic of any agent |
-| Queue job types | Inter-agent contract (typed input shape) | Implementation |
-| lib/ utilities | Shared clients (DB, Redis, ScraperAPI) | Agent orchestration |
-
-**Agent module template:**
-```ts
-// scripts/agents/enricher.ts
-export type EnrichResult = { enriched: number; failed: number; total: number }
-
-export async function runEnrichment(
-  prisma: PrismaClient,
-  batchSize: number,
-): Promise<EnrichResult> { ... }
-```
-
-```ts
-// scripts/start-worker.ts (orchestrator — routing only)
-import { runEnrichment } from './agents/enricher'
-import { runScoring } from './agents/scorer'
-
-const worker = new Worker('poa-scraper', async (job) => {
-  if (job.data.type === 'enrich') return runEnrichment(prisma, job.data.batchSize)
-  if (job.data.type === 'score') return runScoring(prisma)
-  // scraper jobs...
-})
-```
-
-**Module-level mutable state is banned in agents.** State shared implicitly
-across callers becomes a hidden dependency. Pass stateful collaborators as
-arguments or scope them to the call.
-
-**The test for correct structure:** Can you call this agent's primary function
-in a test with no knowledge of its callers or infrastructure? If no, the agent
-has leaked dependencies it doesn't own. See `design/engineering-principles.md`
-for the general form of this test.
-
-**When this pattern is triggered:** Any time a Design step produces a flywheel
-diagram with 2+ agents. The agent module structure must be defined before
-implementation begins — it is a design artifact, not a refactor.
+→ See **`design/engineering-principles.md`** — "Agentic Flywheel" section.
+Triggered any time a Design step produces a flywheel diagram with 2+ agents.
 
 ### Object Model
 

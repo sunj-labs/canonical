@@ -156,6 +156,58 @@ follows the same rules as everything else.
 
 ---
 
+## Agentic Flywheel: Separation of Concerns
+
+When a system has a core loop (flywheel) with 2+ agents, the structural
+pattern is a direct application of the five principles above. It must be
+defined at Design time — not discovered as a refactor.
+
+**The rule:** each flywheel segment is a separate module. The orchestrator
+is routing-only. No exceptions.
+
+```
+flywheel segment      → one agent module
+agent module          → one exported function, typed input/output
+orchestrator          → routes job types to agents, owns lifecycle only
+inter-agent contracts → exported types, not inline job data definitions
+```
+
+| Layer | Owns | Does NOT own |
+|---|---|---|
+| Agent module | Business logic, persistence, error handling | Scheduling, other agents, transport |
+| Orchestrator | Boot, routing, scheduler registration, shutdown | Any business logic |
+| Shared lib | Clients (DB, cache, external APIs) | Orchestration |
+
+**Agent module shape:**
+```ts
+export type AgentResult = { ... }
+export async function runAgent(deps, params): Promise<AgentResult> { ... }
+```
+
+**Orchestrator shape:**
+```ts
+import { runAgentA } from './agents/agent-a'
+import { runAgentB } from './agents/agent-b'
+
+worker.process(async (job) => {
+  if (job.type === 'a') return runAgentA(deps, job.data)
+  if (job.type === 'b') return runAgentB(deps, job.data)
+})
+```
+
+**Module-level mutable state is banned in agents.** Stateful collaborators
+(circuit breakers, caches, rate limiters) must be passed as arguments or
+scoped to the call — never held as module globals shared across invocations.
+
+**Litmus test:** Can you call the agent's primary function in a test with no
+knowledge of its callers or infrastructure? If no, the agent has leaked
+dependencies it doesn't own.
+
+**Trigger:** Any time a Design step produces a flywheel diagram with 2+
+agents. This structure is a design artifact, not a refactor.
+
+---
+
 ## Canonical References
 
 When you need a pattern for a specific structural problem, look here first
