@@ -157,6 +157,67 @@ takes two minutes.
 architectural gap (missing observability, wrong abstraction layer), create a
 backlog item before closing the bug.
 
+### Agentic Flywheel: Separation of Concerns Pattern
+
+Any system with a core loop (flywheel) **must** follow this structural pattern
+before implementation begins. Violating it creates a monolith where agents
+cannot be developed, tested, or deployed independently.
+
+**The rule:** Each segment of the flywheel is a separate module. The
+orchestrator is routing-only. No exceptions.
+
+```
+flywheel segment     → one agent module
+agent module         → one primary exported function with typed input/output
+orchestrator         → imports agents, routes job types, owns lifecycle only
+queue job data types → exported inter-agent contracts, not inline definitions
+```
+
+**What each layer owns:**
+
+| Layer | Owns | Does NOT own |
+|---|---|---|
+| Agent module | Business logic, logging, DB writes, error handling | Queue connection, job scheduling, other agents |
+| Orchestrator (`start-worker.ts`) | Boot, job routing, scheduler registration, shutdown | Business logic of any agent |
+| Queue job types | Inter-agent contract (typed input shape) | Implementation |
+| lib/ utilities | Shared clients (DB, Redis, ScraperAPI) | Agent orchestration |
+
+**Agent module template:**
+```ts
+// scripts/agents/enricher.ts
+export type EnrichResult = { enriched: number; failed: number; total: number }
+
+export async function runEnrichment(
+  prisma: PrismaClient,
+  batchSize: number,
+): Promise<EnrichResult> { ... }
+```
+
+```ts
+// scripts/start-worker.ts (orchestrator — routing only)
+import { runEnrichment } from './agents/enricher'
+import { runScoring } from './agents/scorer'
+
+const worker = new Worker('poa-scraper', async (job) => {
+  if (job.data.type === 'enrich') return runEnrichment(prisma, job.data.batchSize)
+  if (job.data.type === 'score') return runScoring(prisma)
+  // scraper jobs...
+})
+```
+
+**Module-level mutable state is banned in agents.** Circuit breakers, caches,
+and rate limiters that live as module globals become implicit shared state when
+two agents run in the same process. Pass them as constructor arguments or scope
+them to the call.
+
+**The test for correct structure:** Can you import an agent module in isolation
+and call its primary function in a unit test without starting the queue, Redis,
+or any other agent? If no, the agent has leaked dependencies it doesn't own.
+
+**When this pattern is triggered:** Any time a Design step produces a flywheel
+diagram with 2+ agents. The agent module structure must be defined before
+implementation begins — it is a design artifact, not a refactor.
+
 ### Object Model
 
 New objects introduced by any initiative must be registered in the
