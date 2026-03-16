@@ -24,6 +24,7 @@ Interview (open-ended discovery — why does this matter?)
                     → CI (automated pipeline)
                       → Deploy
                         → Observe
+                          → [failure?] Diagnose (Is/Is Not → Five Whys → Hypothesis → Test)
                           → Retrospect (decision record if architectural)
 ```
 
@@ -103,6 +104,58 @@ Example (POA deal pipeline):
 ```
 Data (scrape) → Analysis (score) → Communication (digest) → Decision (shortlist) → Feedback (refine) → Data
 ```
+
+### Diagnosis Step
+
+When a failure is observed and the cause is not immediately obvious, run
+diagnosis before writing any fix. **Trigger: "I don't know the root cause
+before I start fixing."**
+
+**Step 1 — Is/Is Not (bound the problem)**
+
+Fill in the table before hypothesizing. This prevents fixing the wrong layer.
+
+| IS (failing) | IS NOT (working) |
+|---|---|
+| The specific thing that fails | The adjacent things that don't |
+
+Example: *BizBuySell detail pages time out / BizBuySell search pages succeed /
+httpbin.org succeeds* → problem is specific to how BizBuySell serves detail
+pages, not ScraperAPI connectivity.
+
+**Step 2 — Five Whys (trace the chain)**
+
+Ask why five times. Stop when you reach something you can change that prevents
+the entire class of failure, not just this instance.
+
+Example: detail pages fail → ScraperAPI IP-blocked on detail pages → no
+enrichment success rate metric → observability not built → **root cause: #21
+(observability) is the fix, not a proxy flag.**
+
+**Step 3 — Hypothesis + Test**
+
+Write the hypothesis as one sentence before touching code. Then run the
+minimum test that would falsify it. Do not open a PR until the hypothesis
+holds.
+
+Format (as a ticket comment before the fix PR):
+```
+Diagnosis:
+  IS: [what fails]
+  IS NOT: [what works]
+  Root cause (5 Whys): [chain]
+  Hypothesis: [one sentence]
+  Test: [how verified]
+  Result: [pass/fail — if fail, return to step 1]
+```
+
+**When to skip diagnosis:** Cause is immediately obvious and reproducible
+(typo, missing env var, trivial off-by-one). If in doubt, do it — the table
+takes two minutes.
+
+**Output:** Diagnosis comment on the ticket. If Five Whys reveals an
+architectural gap (missing observability, wrong abstraction layer), create a
+backlog item before closing the bug.
 
 ### Object Model
 
