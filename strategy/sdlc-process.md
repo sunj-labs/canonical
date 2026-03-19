@@ -209,8 +209,7 @@ with IA falling out of entity modeling in between. (Cooper, Norman, Larman.)
 **Design system convention**: UI components built on top of shadcn primitives
 should be named after **domain objects** (DealCard, ScorePills, ThesisFilter),
 not generic UI concepts (Card, Badge, Tabs). The copy/language system serves
-as the shared vocabulary layer — see Connolly's Full Stack Design System
-principle: "the same language from code to customer."
+as the shared vocabulary layer — persona-aware labels for each domain object.
 
 ### UX Fitness Review
 
