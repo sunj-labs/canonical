@@ -28,6 +28,94 @@ Interview (open-ended discovery — why does this matter?)
                           → Retrospect (decision record if architectural)
 ```
 
+## Process Map — Gates, Cycles, and Enforcement
+
+The lifecycle above is the linear path. In practice, work enters through
+multiple doors (defects, reviews, user feedback) and cycles through gates.
+This map shows the full system with enforcement strength.
+
+```mermaid
+flowchart TD
+    OBS[("OBSERVE\nProduction, feedback,\nE2E, metrics")] --> |bug/failure/confusion| DEF["DEFECT DETECTION\n/diagnose"]
+    OBS --> |"10 user-facing commits"| UXF["UX FITNESS\nREVIEW"]
+    OBS --> |"10 commits"| ARCH["ARCHITECT\nREVIEW"]
+
+    DEF --> SIG
+    UXF --> SIG
+    ARCH --> SIG
+
+    SIG{"SIGNIFICANCE\nCHECK"}
+    SIG --> |trivial| TEMP
+    SIG --> |moderate| EPIC["EPIC CREATION\n🔴 BLOCK — create\nGitHub issue"]
+    SIG --> |significant| INT["INTERVIEW\nCanvas / PR-FAQ\n🔴 BLOCK"]
+
+    INT --> EPIC
+
+    EPIC --> SURFACE{"UI SURFACE\nIMPACTED?"}
+    SURFACE --> |yes| UXT["UX TRANSLATION\nJTBD → HTA → IA →\nState + Sequence"]
+    SURFACE --> |no| DESIGN["DESIGN ARTIFACTS\nERD, Component,\nSequence, State"]
+
+    UXT --> DESIGN
+
+    DESIGN --> TEMP["TEMPERANCE\n🟡 WARN — every\nnon-trivial task"]
+    TEMP --> CODE["CODE\n🔴 BLOCK — pre-build\ngate per task"]
+    CODE --> |success| VERIFY["VERIFY\n🔴 BLOCK — per task\nbefore next"]
+    CODE --> |"tool error"| ERR["ERROR →\nTEMPERANCE →\nDIAGNOSE"]
+
+    ERR --> |"UI impacted?"| SIG
+    ERR --> |"simple fix"| TEMP
+
+    VERIFY --> DEPLOY["DEPLOY\n/deploy-prod"]
+    DEPLOY --> OBS
+
+    style SIG fill:#fef3c7,stroke:#d97706
+    style EPIC fill:#fee2e2,stroke:#dc2626
+    style INT fill:#fee2e2,stroke:#dc2626
+    style CODE fill:#fee2e2,stroke:#dc2626
+    style VERIFY fill:#fee2e2,stroke:#dc2626
+    style TEMP fill:#fef3c7,stroke:#d97706
+    style UXT fill:#dbeafe,stroke:#2563eb
+    style DESIGN fill:#dbeafe,stroke:#2563eb
+    style ERR fill:#fef3c7,stroke:#d97706
+```
+
+### Enforcement Strength
+
+Every gate has an enforcement level. BLOCK means "do not proceed until
+this is done." WARN means "consider this, state your decision, then proceed."
+
+| Gate | Strength | When | What Must Happen |
+|------|----------|------|-----------------|
+| **Architect review** | 🔴 BLOCK | ≥10 commits since last | Task #1 in session. Report + tickets before any other work. |
+| **Chronicle entry** | 🔴 BLOCK | Missing from previous session | Write before starting new work. |
+| **Defect diagnosis** | 🔴 BLOCK | Bug/failure keywords in prompt | Is/Is Not + Five Whys before any fix code. |
+| **Significance check** | 🔴 BLOCK | After any finding (defect, review, fitness) | Classify trivial/moderate/significant. Moderate+ creates epic. |
+| **Epic creation** | 🔴 BLOCK | Significance = moderate or above | GitHub issue with design checklist before proceeding. |
+| **Pre-build gate** | 🔴 BLOCK | Every Edit/Write of source file, every task | SDLC checkpoint + env check + test plan. |
+| **Post-build verify** | 🔴 BLOCK | After each task, before next | Verification matched to change type. |
+| **Temperance** | 🟡 WARN | Before every non-trivial implementation | Simplest approach? Brute-forcing? Blast radius? |
+| **UX fitness** | 🟡 WARN | ≥10 user-facing commits | IA matches implementation? Entities have surfaces? |
+| **UI surface check** | 🟡 WARN | On defect/arch/error paths | Does this change impact a user-facing surface? |
+| **Error → temperance → diagnose** | 🔴 BLOCK | Tool call returns error | No retry until diagnosis written. |
+
+### Significance Check Criteria
+
+| Level | Criteria | Required Action |
+|-------|----------|----------------|
+| **Trivial** | < 30 min fix, no new objects, no UI change, no state change | Proceed to temperance → code. Log in commit message. |
+| **Moderate** | New behavior, touches existing flow, UI change, new test needed | 🔴 Create GitHub issue with design checklist. Then design → code. |
+| **Significant** | New entity, new user-facing surface, architectural change, multi-session scope | 🔴 Create GitHub issue. Run interview/canvas before design. |
+
+### Cycles
+
+The map has five recurring cycles:
+
+1. **Defect cycle**: Observe → Defect → Significance → Epic → Design → Code → Deploy → Observe
+2. **Architecture cycle**: Observe → Arch Review → Significance → Epic → Design → Code → Deploy → Observe
+3. **UX fitness cycle**: Observe → UX Fitness → Significance → Epic → UX Translation → Design → Code → Deploy → Observe
+4. **Hot fix cycle**: Observe → Defect → Significance (trivial) → Temperance → Code → Deploy → Observe
+5. **Build error cycle**: Code → Error → Temperance → Diagnose → (back to Significance if UI impacted, else back to Code)
+
 ## Standards Applied at Each Step
 
 The SDLC is the sequence. These are the standards that apply at each step.
