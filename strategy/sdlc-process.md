@@ -35,7 +35,7 @@ Check the relevant docs before proceeding — they are not optional reading.
 
 | Step | Apply |
 |---|---|
-| **Design** | `design/engineering-principles.md` (always) · `design/ai-design-guidelines.md` (if AI features) · `design/design-principles.md` (if UI) · `design/trust-zone-flow.md` (if agents or secrets) · `design/object-model.md` (if new objects) |
+| **Design** | `design/engineering-principles.md` (always) · `design/ai-design-guidelines.md` (if AI features) · `design/design-principles.md` (if UI) · `design/trust-zone-flow.md` (if agents or secrets) · `design/object-model.md` (if new objects) · UX Translation Chain (if user-facing surface — see Design Step below) |
 | **Specs** | `strategy/templates/spec-template.md` |
 | **Implementation** | `standards/testing-requirements.md` · `standards/security-scanning.md` · `standards/branching-strategy.md` · `standards/commit-conventions.md` · `design/component-patterns.md` (if UI) |
 | **Code Review / CI** | `standards/security-scanning.md` (CI gate) |
@@ -90,6 +90,53 @@ Not every initiative needs all seven diagram types. Use the table to decide:
 - **Operator scope, simple**: ERD + maybe a sequence. Skip the rest.
 - **Operator scope, agentic/async**: ERD + Component + Sequence + Activity + State (required).
 - **Domain/Product scope**: All that apply.
+
+### UX Translation Chain
+
+When an initiative has a **user-facing surface** (pages, interactions, flows),
+run the UX translation chain during the Design step — concurrent with the
+diagrams above, not after them.
+
+```
+JTBD → Task Analysis (HTA/CTA) → Entity Model → State Diagrams → Sequence Diagrams
+                                       ↕                ↕
+                                 IA (nav, screens)    Interaction Design
+```
+
+The chain produces artifacts that **co-derive** with the design diagrams:
+- Entity model informs the ERD (and vice versa)
+- State diagrams serve both agent boundaries and UI states
+- Sequence diagrams show both backend flows and user ↔ UI ↔ API choreography
+
+| Step | Method | Output |
+|------|--------|--------|
+| **JTBD → Tasks** | Hierarchical Task Analysis (HTA) for sequential work. Cognitive Task Analysis (CTA) for judgment-heavy work — adds decision points, mental models, expertise cues. | Task flow per JTBD with branch points. |
+| **Tasks → Scenarios** | User stories with JTBD traceability. Every story traces to a job. If it can't, question whether it belongs. | Stories + traceability matrix. |
+| **Entity Model → IA** | Entity inventory from schema + task analysis. OOUX: each primary entity gets list + detail views. IA from entity relationships (Morville: organization, labeling, navigation, search). | Screen map, nav structure. |
+| **IA → Interaction** | UML State Diagrams (most rigorous — catches edge cases). UML Sequence Diagrams (handoff to engineering). User flows (stakeholder alignment). | State diagrams, sequence diagrams, edge case coverage. |
+
+**The standard**: JTBD → HTA → UML State Diagrams → UML Sequence Diagrams,
+with IA falling out of entity modeling in between. (Cooper, Norman, Larman.)
+
+**Design system convention**: UI components built on top of shadcn primitives
+should be named after **domain objects** (DealCard, ScorePills, ThesisFilter),
+not generic UI concepts (Card, Badge, Tabs). The copy/language system serves
+as the shared vocabulary layer — see Connolly's Full Stack Design System
+principle: "the same language from code to customer."
+
+### UX Fitness Review
+
+UX artifacts are **living documents** that decay as implementation diverges
+from design. Check them on an ongoing basis:
+
+| Trigger | What to Check | Re-entry Point |
+|---------|--------------|----------------|
+| New Prisma model | Does this entity need a UI surface? Does nav change? | Entity model → IA |
+| New page route created | State diagram for this page? Edge cases? | Interaction design |
+| Existing flow changes behavior | State diagram transitions still accurate? | Interaction design |
+| New user role or persona | Different jobs? Different task flows? | JTBD → full chain |
+| User reports "confusing" / "can't find X" | HTA matches user's mental model? | Task analysis |
+| Periodic (every 10 user-facing commits) | IA matches implementation? | Entity model → IA |
 
 ### Core Loop / Flywheel in Agentic Systems
 
@@ -158,6 +205,12 @@ specs are written. This prevents naming drift across repos.
    identify which artifacts need updating: object model, state diagrams,
    sequence diagrams, specs. The ticket itself is the trigger — not the
    formality of the intake path.
+8. **UX artifacts are living documents.** When implementation changes entities,
+   pages, flows, or navigation, check the UX translation artifacts (task
+   analysis, entity model, state diagrams, IA) for drift. Periodic fitness
+   reviews catch what file-level checks miss. The pre-build gate checks for
+   stale artifacts; the UX fitness review (every 10 user-facing commits)
+   checks for structural drift.
 
 ## Cadence
 
