@@ -46,7 +46,16 @@ Tool-failure hook upgraded to error → temperance → diagnose chain.
 - Gmail scope insufficient — `gmail.readonly` can't send. Need re-auth with `gmail.send` (#68)
 - Full fix steps documented on ticket
 
-### Engineering Quality Sprint (Phase 2 — overnight)
+### Engineering Quality Sprint (Phase 2 — overnight, continued)
+- **#54 stories 2-3** — yield assessment: assessYield() with 6 tests
+- **#24** — cross-source deal deduplication: normalizeTitle() + findDuplicates() with 8 tests
+- **#69** — ops dashboard: source breakdown, data quality %, recent job history (OPERATOR-only)
+- **#61** — middleware session decision documented and closed
+- **#52** — API cost protection epic closed (all components shipped)
+- **#16, #17, #18, #28** — stale epics closed (work already shipped)
+- Tests: 165 → 179 across 17 files
+
+### Engineering Quality Sprint (Phase 1 — evening)
 - **#67** — Deal.createdAt index applied on production
 - **#66** — Scorer writes wrapped in Prisma $transaction
 - **#63** — Langfuse blocked (no credentials) — documented and skipped per pre-build gate
