@@ -97,6 +97,10 @@ this is done." WARN means "consider this, state your decision, then proceed."
 | **UX fitness** | 🟡 WARN | ≥10 user-facing commits | IA matches implementation? Entities have surfaces? |
 | **UI surface check** | 🟡 WARN | On defect/arch/error paths | Does this change impact a user-facing surface? |
 | **Error → temperance → diagnose** | 🔴 BLOCK | Tool call returns error | No retry until diagnosis written. |
+| **Unit test enforcement** | 🟡 WARN | Pre-commit, new source file | New lib file has matching test file? Test count decreased? |
+| **CI test gate** | 🔴 BLOCK | CI pipeline, pre-deploy | `vitest run` must pass. Deploy rejected on failure. |
+| **Post-deploy smoke** | 🔴 BLOCK | CI pipeline, post-deploy | Health + API + auth redirect curls pass. Fail = investigate. |
+| **SDLC trace log** | 🟡 WARN | Session end | Trace log maintained throughout session? |
 
 ### Significance Check Criteria
 
@@ -125,8 +129,8 @@ Check the relevant docs before proceeding — they are not optional reading.
 |---|---|
 | **Design** | `design/engineering-principles.md` (always) · `design/ai-design-guidelines.md` (if AI features) · `design/design-principles.md` (if UI) · `design/trust-zone-flow.md` (if agents or secrets) · `design/object-model.md` (if new objects) · UX Translation Chain (if user-facing surface — see Design Step below) |
 | **Specs** | `strategy/templates/spec-template.md` |
-| **Implementation** | `standards/testing-requirements.md` · `standards/security-scanning.md` · `standards/branching-strategy.md` · `standards/commit-conventions.md` · `design/component-patterns.md` (if UI) |
-| **Code Review / CI** | `standards/security-scanning.md` (CI gate) |
+| **Implementation** | `standards/testing-strategy.md` (always) · `standards/testing-requirements.md` · `standards/security-scanning.md` · `standards/branching-strategy.md` · `standards/commit-conventions.md` · `design/component-patterns.md` (if UI) |
+| **Code Review / CI** | `standards/security-scanning.md` (CI gate) · `standards/testing-strategy.md` (CI + post-deploy) |
 | **Diagnose** (on failure) | `standards/diagnosis.md` |
 | **Session start/end** | `strategy/session-continuity.md` |
 
@@ -407,6 +411,53 @@ how the SDLC evolved, and what skills were demonstrated.
 - Chronicles = narrative record (what was learned, what it means)
 - Both are produced when running in danger mode
 
+## SDLC Trace Log
+
+Process observability — the meta-layer that records whether the SDLC
+itself was followed during each session.
+
+**Format**: append-only log, one line per process event.
+
+```
+timestamp | hook | trigger | action_taken | outcome
+```
+
+**Example**:
+```
+09:15:02 | session-start | resume | read memory, proposed plan | plan accepted
+09:15:02 | architect-review-check | 12 commits | created as Task #1 | review completed
+09:22:15 | pre-build | Edit scoring.ts | SDLC checkpoint | followed — ticket #58
+09:25:30 | temperance | pre-task | assessed approach | proceeded — trivial
+09:26:01 | pre-commit | git commit | verification section | PASS — unit test
+09:30:00 | significance-check | defect finding | moderate | BLOCK — created #74
+09:45:00 | test-unit | vitest run | 179 tests | 179 pass, 0 fail
+10:30:00 | session-end | user exit | chronicle + memory | completed
+```
+
+**Storage**: `docs/sdlc-traces/YYYY-MM-DD-session.log` — one file per session,
+git-tracked.
+
+**Who writes**:
+- **Hooks**: append trigger line automatically (deterministic)
+- **Agent**: append action + outcome (contextual)
+- **Hybrid** is recommended — hooks prove they fired, agent proves it responded
+
+**What it enables**:
+- Process compliance scoring (% hooks followed per session)
+- Hook effectiveness analysis (which gates catch real issues vs noise)
+- Agent improvement tracking (adherence trend over time)
+- SDLC evolution data (which gates should be BLOCK vs WARN)
+- Retrospective input ("last session: 12 hook fires, 8 followed, 4 ignored")
+
+**Relationship to other artifacts**:
+
+| Artifact | What it records | Granularity |
+|----------|----------------|-------------|
+| Chronicle | What shipped, what was learned | Per session |
+| Danger mode summary | What files changed, tickets moved | Per session |
+| Architect review | System health | Per 10 commits |
+| **SDLC trace log** | **Process compliance — hooks, gates, decisions** | **Per event** |
+
 ## Documentation as Byproduct
 
 | Layer | What | When updated |
@@ -415,6 +466,7 @@ how the SDLC evolved, and what skills were demonstrated.
 | Specs | What gets built and why | Before implementation |
 | Danger mode summaries | What changed in auto-complete sessions | During danger mode sessions |
 | Session chronicles | What happened, what was learned, post ideas | Every session end |
+| SDLC trace logs | Process compliance per event | Every session, per hook/gate |
 | Changelog | What shipped | Every merge to main |
 | README | What this is, how to run it | When setup changes |
 
