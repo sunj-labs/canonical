@@ -88,7 +88,7 @@ this is done." WARN means "consider this, state your decision, then proceed."
 |------|----------|------|-----------------|
 | **Architect review** | 🔴 BLOCK | ≥10 commits since last | Task #1 in session. Report + tickets before any other work. |
 | **Chronicle entry** | 🔴 BLOCK | Missing from previous session | Write before starting new work. |
-| **Defect diagnosis** | 🔴 BLOCK | Bug/failure keywords in prompt | Is/Is Not + Five Whys before any fix code. |
+| **Defect diagnosis** | 🔴 BLOCK | Any failure — keywords, screenshots, logs, implicit phrasing | Is/Is Not + Five Whys before any fix code. Hook catches keywords; agent must self-trigger for visual/implicit failures. |
 | **Significance check** | 🔴 BLOCK | After any finding (defect, review, fitness) | Classify trivial/moderate/significant. Moderate+ creates epic. |
 | **Epic creation** | 🔴 BLOCK | Significance = moderate or above | GitHub issue with design checklist before proceeding. |
 | **Pre-build gate** | 🔴 BLOCK | Every Edit/Write of source file, every task | SDLC checkpoint + env check + test plan. |
@@ -97,7 +97,7 @@ this is done." WARN means "consider this, state your decision, then proceed."
 | **UX fitness** | 🟡 WARN | ≥10 user-facing commits | IA matches implementation? Entities have surfaces? |
 | **UI surface check** | 🟡 WARN | On defect/arch/error paths | Does this change impact a user-facing surface? |
 | **Error → temperance → diagnose** | 🔴 BLOCK | Tool call returns error | No retry until diagnosis written. |
-| **Unit test enforcement** | 🟡 WARN | Pre-commit, new source file | New lib file has matching test file? Test count decreased? |
+| **Unit test enforcement** | 🟡 WARN | Pre-commit, new/modified source file | New or modified file in src/lib/, src/agents/, src/app/api/ has matching test? Test count decreased? Hook checks file presence; agent must verify new exported functions have tests regardless. |
 | **CI test gate** | 🔴 BLOCK | CI pipeline, pre-deploy | `vitest run` must pass. Deploy rejected on failure. |
 | **Post-deploy smoke** | 🔴 BLOCK | CI pipeline, post-deploy | Health + API + auth redirect curls pass. Fail = investigate. |
 | **SDLC trace log** | 🟡 WARN | Session end | Trace log maintained throughout session? |
