@@ -96,7 +96,7 @@ this is done." WARN means "consider this, state your decision, then proceed."
 | **Temperance** | 🟡 WARN | Before every non-trivial implementation | Simplest approach? Brute-forcing? Blast radius? |
 | **UX fitness** | 🟡 WARN | ≥10 user-facing commits | IA matches implementation? Entities have surfaces? |
 | **UI surface check** | 🟡 WARN | On defect/arch/error paths | Does this change impact a user-facing surface? |
-| **Error → temperance → diagnose** | 🔴 BLOCK | Tool call returns error | No retry until diagnosis written. |
+| **Observed failure → temperance → diagnose** | 🔴 BLOCK | Any observed failure: tool errors, CI logs, server logs, type check output, test results, screenshots, downstream breakage | Temperance (is this expected? am I about to brute-force?) → Diagnose (Is/Is Not + Five Whys) → then fix. No retry or fix attempt until diagnosis written. Hook covers tool errors only; agent responsible for all other sources. |
 | **Unit test enforcement** | 🟡 WARN | Pre-commit, new/modified source file | All exported functions require unit tests — src/lib/, src/agents/, src/app/api/, and any extracted utilities. Hook provides file-naming pattern detection as safety net only. |
 | **CI test gate** | 🔴 BLOCK | CI pipeline, pre-deploy | `vitest run` must pass. Deploy rejected on failure. |
 | **Post-deploy smoke** | 🔴 BLOCK | CI pipeline, post-deploy | Health + API + auth redirect curls pass. Fail = investigate. |
