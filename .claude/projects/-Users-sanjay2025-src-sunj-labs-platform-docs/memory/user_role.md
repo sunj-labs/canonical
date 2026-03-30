@@ -1,14 +1,19 @@
 ---
 name: user-role-and-goals
-description: Sanjay is building an AI-native SDLC — wants Claude/agents to run the full loop from retros to production, including DORA metrics
+description: Sanjay is building an AI-native SDLC — wants autonomous multi-agent development across repos, with DORA metrics
 type: user
 ---
 
-Sanjay is the founder/builder at sunj-labs. He's building a platform (IDP-style) and wants to move to a workflow where AI agents assist across the full software development lifecycle:
+Sanjay is the founder/builder at sunj-labs. Has a day job — needs agents that can work autonomously while he's away. Building a platform with multiple apps (POA is app 1, has a dozen more ideas).
 
-- **Session retros**: reflect on what was done in a previous sprint/session
-- **Backlog management**: create and groom GitHub Issues as the backlog
-- **Execution**: process tasks through coding, testing, and shipping to production
-- **Measurement**: track and evaluate DORA metrics (Deployment Frequency, Lead Time, Change Failure Rate, MTTR)
+Goals for this repo (platform-docs):
+- Shared SDLC foundation that any app repo can import (extractable CLAUDE.md fragments, skills, hooks)
+- AI-native development loop: reflect → plan → execute → measure
+- DORA metrics tracking across all projects
+- Multi-agent architecture: one human supervising multiple autonomous agents across multiple repos
 
-He's already built out an SDLC portable kit with strategy docs, design principles, and standards. Now wants to operationalize it with AI collaboration.
+Key context:
+- POA repo is the active proving ground — has scheduled workers, GitHub Issues backlog, deployed to prod
+- `ops` repo exists separately for operational runbooks (agentic-sdlc, session conventions, DORA tracking, GitHub Issues setup)
+- `sdlc-portable/` in this repo is the reusable methodology kit
+- Human reviews PRs, not sessions — that's the governance model for autonomous work
