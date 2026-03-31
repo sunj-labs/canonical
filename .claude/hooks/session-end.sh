@@ -2,7 +2,7 @@
 set -e
 
 # Session End hook — fires on Stop event.
-# Requires Claude to run session-end protocol.
+# Requires Claude to run session-end protocol, then auto-saves state.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/trace-helper.sh"
@@ -33,12 +33,17 @@ Before ending, your response MUST include:
 8. **Release notes**: If user-facing changes deployed:
    - Draft to docs/release-notes/YYYY-MM-DD.md
    - Plain language for the least technical user
-9. **Session lock**: Remove .claude/SESSION_LOCK if it exists.
+9. **Save state**: Run `.claude/hooks/save-state.sh` — commits, pushes,
+   writes LAST_SAVE, removes SESSION_LOCK. This is automatic on session
+   end but verify it ran.
 10. **Next session**: 1-2 sentences on what to pick up next.
 
 Do NOT skip the chronicle. Do NOT say "I'll write it next time."
 Write it now or the session-start hook will flag it.
 ============================================
 END
+
+# Auto-save state on session end
+"$SCRIPT_DIR/save-state.sh" --quiet 2>/dev/null || true
 
 exit 0

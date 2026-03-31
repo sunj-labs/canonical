@@ -23,6 +23,35 @@ echo "You MUST run the Session Start protocol before doing ANY other work."
 echo "Do NOT skip this. Do NOT jump to answering the user's question first."
 echo ""
 
+# === Last save state ===
+LAST_SAVE_FILE=".claude/LAST_SAVE"
+if [ -f "$LAST_SAVE_FILE" ]; then
+  SAVE_TIMESTAMP=$(grep '^timestamp:' "$LAST_SAVE_FILE" | cut -d' ' -f2-)
+  SAVE_MACHINE=$(grep '^machine:' "$LAST_SAVE_FILE" | cut -d' ' -f2-)
+  SAVE_BRANCH=$(grep '^branch:' "$LAST_SAVE_FILE" | cut -d' ' -f2-)
+  SAVE_COMMIT=$(grep '^last_commit:' "$LAST_SAVE_FILE" | cut -d' ' -f2-)
+  echo "### LAST SAVE STATE"
+  echo ""
+  echo "Saved: $SAVE_TIMESTAMP"
+  echo "Machine: $SAVE_MACHINE"
+  echo "Branch: $SAVE_BRANCH"
+  echo "Last commit: $SAVE_COMMIT"
+  echo ""
+else
+  echo "### NO PREVIOUS SAVE STATE FOUND"
+  echo ""
+  echo "This may be the first session, or save-state has never run."
+  echo "Proceed with caution — check git log for context."
+  echo ""
+fi
+
+# === Write session lock ===
+LOCK_FILE=".claude/SESSION_LOCK"
+MACHINE=$(hostname -s 2>/dev/null || echo "unknown")
+echo "machine: $MACHINE" > "$LOCK_FILE"
+echo "timestamp: $(date +%Y-%m-%dT%H:%M:%S%z)" >> "$LOCK_FILE"
+echo "pid: $$" >> "$LOCK_FILE"
+
 # === Abrupt stop detection ===
 DIRTY_TREE=$(git status --porcelain 2>/dev/null | head -5)
 
