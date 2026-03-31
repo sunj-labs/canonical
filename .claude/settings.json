@@ -14,13 +14,75 @@
       "Bash(git branch*)",
       "Bash(git checkout -b*)",
       "Bash(git switch*)",
-      "Bash(ls*)"
+      "Bash(ls*)",
+      "Bash(gh issue*)",
+      "Bash(gh pr*)"
     ],
     "deny": [
       "Bash(git push --force*)",
       "Bash(git reset --hard*)",
       "Bash(rm -rf*)",
       "Bash(git checkout -- .)"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/bug-diagnosis.sh"
+      }
+    ],
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/session-reflection.sh"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/session-end.sh"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": { "type": "tool", "tool_name": "Edit" },
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-build-gate.sh"
+          }
+        ]
+      },
+      {
+        "matcher": { "type": "tool", "tool_name": "Write" },
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-build-gate.sh"
+          }
+        ]
+      },
+      {
+        "matcher": { "type": "tool", "tool_name": "Bash" },
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-commit-gate.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": { "type": "tool", "tool_name": "Bash" },
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/tool-failure-diagnosis.sh"
+          }
+        ]
+      }
     ]
   }
 }
