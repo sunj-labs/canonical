@@ -28,25 +28,40 @@
   "hooks": {
     "UserPromptSubmit": [
       {
-        "type": "command",
-        "command": ".claude/hooks/bug-diagnosis.sh"
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/bug-diagnosis.sh"
+          }
+        ]
       }
     ],
     "SessionStart": [
       {
-        "type": "command",
-        "command": ".claude/hooks/session-reflection.sh"
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/session-reflection.sh"
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "type": "command",
-        "command": ".claude/hooks/session-end.sh"
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/session-end.sh"
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": { "type": "tool", "tool_name": "Edit" },
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
@@ -55,16 +70,7 @@
         ]
       },
       {
-        "matcher": { "type": "tool", "tool_name": "Write" },
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-build-gate.sh"
-          }
-        ]
-      },
-      {
-        "matcher": { "type": "tool", "tool_name": "Bash" },
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -75,7 +81,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": { "type": "tool", "tool_name": "Bash" },
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
