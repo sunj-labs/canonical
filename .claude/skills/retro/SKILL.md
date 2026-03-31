@@ -1,4 +1,11 @@
-# /retro — Session Retrospective
+---
+name: retro
+description: Session retrospective — reflect on what worked, what didn't, what to change.
+user_invocable: true
+disable_model_invocation: false
+---
+
+# Retro — Session Retrospective
 
 Reflect on the current session and capture learnings.
 

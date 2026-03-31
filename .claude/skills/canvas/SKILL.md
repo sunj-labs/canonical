@@ -1,4 +1,11 @@
-# /canvas — Create Product Canvas
+---
+name: canvas
+description: Create new product canvas — three-stage template (Thesis → Shape → Build Sequence).
+user_invocable: true
+disable_model_invocation: false
+---
+
+# Canvas — Create Product Canvas
 
 Create a new product canvas following the three-stage template.
 

@@ -1,4 +1,11 @@
-# /spec — Generate Structured Spec from Canvas or Issue
+---
+name: spec
+description: Generate structured spec from canvas or issue — bridge product thinking to engineering work.
+user_invocable: true
+disable_model_invocation: false
+---
+
+# Spec — Generate Structured Spec from Canvas or Issue
 
 Bridge the gap between product thinking (canvases) and engineering work (GitHub Issues).
 
@@ -26,7 +33,6 @@ Link to canvas or issue. Why this exists.
 
 ### Must Have
 - [ ] Requirement — Acceptance: {specific testable condition}
-- [ ] Requirement — Acceptance: {specific testable condition}
 
 ### Should Have
 - [ ] ...
@@ -36,7 +42,7 @@ Link to canvas or issue. Why this exists.
 
 ## Design
 - User flow (step by step)
-- Object model impact (new objects, changed objects, reference design/object-model.md)
+- Object model impact (new objects, changed objects)
 - Interface contract (API shape, component props)
 
 ## Technical Approach
@@ -50,12 +56,12 @@ Link to canvas or issue. Why this exists.
 
 ## Output
 
-Write to `specs/{YYYY-MM-DD}-{slug}.md` (create `specs/` directory if needed)
+Write to `specs/{YYYY-MM-DD}-{slug}.md` (or `docs/specs/` in app repos)
 
 ## Rules
 
-- Every Must Have requirement needs at least one testable acceptance criterion
-- Acceptance criteria must be specific — not "works correctly" but "returns HTTP 200 with JSON body containing dealId"
-- If the source material is too vague for a spec, list what questions need answering — don't invent requirements
+- Every Must Have needs at least one testable acceptance criterion
+- Not "works correctly" but "returns HTTP 200 with JSON body containing dealId"
+- If source is too vague, list what questions need answering — don't invent requirements
 - Reference existing objects from the object model; flag when new objects are needed
-- Link back to source canvas or issue in Context
+- When UI is involved, note that UX translation chain is needed
