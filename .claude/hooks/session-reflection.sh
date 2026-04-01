@@ -149,6 +149,20 @@ for REVIEW_DIR in "docs/architecture/reviews" "architecture/reviews"; do
   fi
 done
 
+# === Canonical evolution issues (canonical sessions only) ===
+REPO_NAME_CHECK=$(gh repo view --json name -q '.name' 2>/dev/null || echo "")
+if [ "$REPO_NAME_CHECK" = "platform-docs" ] || [ "$REPO_NAME_CHECK" = "canonical" ]; then
+  EVOLUTION_ISSUES=$(gh issue list -R "sunj-labs/$REPO_NAME_CHECK" --label "canonical-evolution" --state open --limit 10 2>/dev/null)
+  if [ -n "$EVOLUTION_ISSUES" ]; then
+    echo "### CANONICAL EVOLUTION — PENDING PROMOTIONS"
+    echo ""
+    echo "$EVOLUTION_ISSUES"
+    echo ""
+    echo "Review and resolve these before other work."
+    echo ""
+  fi
+fi
+
 # === Standard reflection steps ===
 echo "### Step 1: Read memory"
 echo "Read project memory from .claude/ directory"

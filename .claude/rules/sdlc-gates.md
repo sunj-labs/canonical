@@ -44,6 +44,14 @@ Before committing, ask yourself:
 
 "I'll add tests later" is never acceptable. Tests ship with the code.
 
+## Canonical Evolution Check (non-canonical repos only)
+
+Before committing changes to .claude/ in any app repo:
+- Did I add or modify a skill, rule, or hook?
+- Is it general (applies to any project) or app-specific?
+- If general → run /promote to create a canonical-evolution issue
+- Don't block on the promotion — log it and move on
+
 ## Architect Review
 
 Run /architect-review every 10 commits or before any launch.
