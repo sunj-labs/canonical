@@ -43,6 +43,15 @@ if [ -n "$STAGED_SOURCE_FILES" ]; then
   done <<< "$STAGED_SOURCE_FILES"
 fi
 
+# --- Canonical evolution check: .claude/ changes being committed ---
+STAGED_CLAUDE=$(git diff --cached --name-only -- '.claude/skills/*' '.claude/rules/*' '.claude/hooks/*' '.claude/agents/*' 2>/dev/null | grep -v 'SESSION_LOCK\|LAST_SAVE' | head -5)
+if [ -n "$STAGED_CLAUDE" ]; then
+  WARNINGS="${WARNINGS}SUBSTRATE CHANGE DETECTED — consider /promote:\n"
+  WARNINGS="${WARNINGS}   Files: $(echo "$STAGED_CLAUDE" | tr '\n' ', ')\n"
+  WARNINGS="${WARNINGS}   Is this general (applies to any project) or app-specific?\n"
+  WARNINGS="${WARNINGS}   If general → run /promote to propose for canonical inheritance.\n"
+fi
+
 # --- UI usability check reminder ---
 STAGED_UI=$(git diff --cached --name-only -- 'src/app/**/page.tsx' 'src/components/**/*.tsx' 2>/dev/null | head -3)
 if [ -n "$STAGED_UI" ]; then
