@@ -5,7 +5,7 @@
 # Watched repos are listed below. Add new repos as they're created.
 
 WATCHED_REPOS=(
-  "$HOME/src/sunj-labs/platform-docs"
+  "$HOME/src/sunj-labs/canonical"
   "$HOME/src/sunj-labs/poa"
 )
 
