@@ -23,3 +23,14 @@ Rules:
 - Validate all user input at system boundaries
 - Use parameterized queries (Prisma handles this)
 - OWASP top 10 awareness: XSS, injection, broken auth, SSRF
+
+Auth matrix (define per project):
+- List every route and its required auth level
+- Protected routes must check session/token
+- Public routes must be explicitly marked as intentionally public
+- API routes that modify data require auth — no exceptions
+
+Tenant isolation (if multi-tenant):
+- Every query on tenant-scoped models must include tenant context
+- No hardcoded tenant IDs, financial thresholds, or tenant-specific logic
+- Tenant context resolved at middleware/boundary, passed through
