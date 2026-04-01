@@ -1,23 +1,22 @@
 ---
 name: SDLC Checkpoint
-description: Pre-build gate — verifies the SDLC flow was followed before implementation starts
-triggers:
-  - "start implementing"
-  - "begin coding"
-  - "write the code"
-  - "build this"
-  - "implement this"
-  - "let's code"
+description: "SDLC gate reference — checklist used by pre-build-gate hook. Not invoked directly; read by hook and agent."
+user_invocable: false
+disable_model_invocation: false
 ---
 
-# SDLC Checkpoint
+# SDLC Checkpoint — Reference
 
-Before writing implementation code, verify the SDLC flow was followed.
+This checklist is enforced by the **pre-build-gate.sh** hook on every Edit/Write.
+It is not invoked as a slash command. The hook fires automatically and references
+this checklist.
+
+If you need to run the checklist manually (e.g., hook unavailable), follow these steps:
 
 ## Checklist
 
 ### 1. Canvas exists?
-Is there a canvas in `strategy/canvases/` for this initiative?
+Is there a canvas in `strategy/canvases/` (or `docs/strategy/`) for this initiative?
 - If **no** and scope is non-trivial: **BLOCK**. Run `/canvas` first.
 - If scope is trivial (config change, typo fix): skip.
 
@@ -32,15 +31,14 @@ Is there a GitHub Issue tracking this work?
 
 ### 4. Design artifacts?
 For UI changes: do UX translation artifacts exist?
-- If touching UI and no design artifacts: **WARN**. The standard requires JTBD → HTA → State Diagrams → Sequence Diagrams for user-facing surfaces. See `strategy/sdlc-process.md` UX Translation Chain section.
+- If touching UI and no design artifacts: **WARN**. Run the UX chain:
+  `/jtbd-tasks` → `/task-scenarios` → `/ia-model` → `/interaction-design`
 
 ### 5. Branch created?
 Is work happening on a feature branch, not main?
 - If on main: **BLOCK**. Create a branch: `feature/ISSUE-NNN-short-description`
 
 ## Output
-
-Print the checklist with pass/fail/skip for each item:
 
 ```
 SDLC Checkpoint
