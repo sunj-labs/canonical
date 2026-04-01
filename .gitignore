@@ -4,3 +4,4 @@
 # Local session state (not committed)
 .claude/SESSION_LOCK
 .claude/LAST_SAVE
+.claude/projects/*/screenshots/
