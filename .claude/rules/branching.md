@@ -19,3 +19,9 @@ Rules:
 - No branches older than 5 days — break it up
 - Force push on feature branches is fine, never on main
 - Semantic versioning tags for releases: v0.1.0, v0.2.0
+
+Multi-branch work (autonomous/multi-step sessions):
+- See `standards/branch-stacking.md` for stacked atomic branches
+- Stack manifest declares branches, dependencies, parallel-safety
+- Naming: `feature/ISSUE-NNN-stack-N-short-description`
+- Each branch is independently reviewable and revertable
