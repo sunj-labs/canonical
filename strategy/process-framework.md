@@ -1,6 +1,6 @@
 # Canonical — Session Guidance v3: Process Framework, Agent Roles & Risk/Value Balance
 
-> I am feed this document to establish the structural and agentic foundations of autonomous software development.
+> Feed this document to a Canonical session to establish the structural and agentic foundations of autonomous software development.
 
 ---
 
@@ -34,13 +34,17 @@ Neither lever dominates. An iteration that only retires risk ships nothing users
 
 ### The Iteration Bet (required substrate artifact)
 
-Every iteration must declare its bet before work begins:
+Every iteration must declare its bet before work begins. **Appetite is denominated in agentic units — cost and turns — not calendar time.** Agents don't sleep. Days are a human unit with no meaning here.
+
+The Orchestrator requests bet sizes from the operator before scheduling. Defaults are never assumed — cost ceilings are set per project in the manifest.
 
 ```markdown
 ## Iteration N Bet
 
 **Phase**: Elaboration / Construction / Transition
-**Appetite**: X days
+
+**Scope**:
+- [Feature / ADR / spec section being built — the work definition]
 
 **Risk being retired**:
 - R-XXX: [description] — how this iteration resolves it
@@ -53,6 +57,11 @@ Every iteration must declare its bet before work begins:
 
 **Viability signal**:
 - [What the PM is watching — metric, user behavior, or decision gate]
+
+**Appetite**:
+- Cost ceiling: $X (from manifest — Orchestrator will not schedule without this)
+- Turn limit: N (runaway loop protection)
+- Warning threshold: 75% of cost ceiling — Orchestrator surfaces status
 
 **Balance rationale**: [1–2 sentences on why this mix is right for where we are]
 ```
@@ -425,7 +434,126 @@ Capabilities that are scoped, not yet built. Orchestrator is aware of these and 
 
 ---
 
-## 12. Reference Sources
+## 12. Project Manifest
+
+Every project using Canonical declares a `substrate.config.md` at the repo root. The Orchestrator reads this at session init before activating any agents, loading any ceremony, or scheduling any iteration. Nothing fires that the manifest doesn't authorize.
+
+### Process Levels
+
+| Level | Who it's for | What activates |
+|---|---|---|
+| `core` | Solo operator, supervised sessions | Rules, hooks, skills, Builder + Reviewer only. Light iteration planning. No phase gates, no risk register, no iteration bet ceremony. |
+| `standard` | Solo going autonomous, or 2-person team | Adds Architect, PM, Designer. Formal iteration bets (lightweight). Phase gates active. Risk register on. |
+| `full` | Multi-agent autonomous, team of 3+ | All 10 agents. Full ceremony. Orchestrator routing. 4-signal iteration bet. All phase gates enforced. |
+
+### Manifest Schema
+
+```markdown
+# substrate.config.md
+
+## Process
+level: core | standard | full
+
+## Active agents
+agents: [Builder, Reviewer]
+# full list: Shaper, PM, Designer, Creative Director, Architect,
+#            Builder, Reviewer, Deployer, Closer, Orchestrator
+
+## Phases
+phases: [Inception, Elaboration, Construction, Transition]
+# omit phases you don't need ceremony for at this level
+
+## Iteration planning
+iterations: light | formal
+# light = one-liner bet (retiring X, proving Y, ceiling $Z)
+# formal = full 4-signal bet with balance rationale
+
+## Risk register
+risk-register: yes | no
+
+## Budget (see Section 13)
+budget:
+  session_ceiling: $20
+  iteration_ceiling: $8        # Orchestrator will ask operator if not set
+  warning_threshold: 75%
+  replenish_floor: $10
+  model_routing:
+    orchestrator: haiku
+    shaper: opus               # Inception only — revert to sonnet after
+    pm: sonnet
+    creative_director: sonnet
+    architect: sonnet
+    designer: sonnet
+    builder: sonnet
+    reviewer: haiku
+    deployer: haiku
+    closer: haiku
+```
+
+### Orchestrator Manifest Rules
+
+1. Read `substrate.config.md` before any other action at session init.
+2. If `iteration_ceiling` is not set, **ask the operator before scheduling** — never assume a default.
+3. Only activate agents listed under `agents:`. Others exist in substrate but are dormant.
+4. If `level: core`, skip phase gate evaluation, risk register surfacing, and 4-signal bet validation. Use light iteration format only.
+5. If `level: full`, enforce all Section 9 agent interaction rules without exception.
+6. Manifest overrides everything except hard safety rules.
+
+### Light Iteration Format (core and standard)
+
+```markdown
+## Iteration N
+Retiring: R-001 [one line]
+Proving: [one line — what business signal]
+Scope: [features / ADRs / spec sections]
+Cost ceiling: $X
+Turn limit: N
+```
+
+Three to five lines. Same forcing function as the full bet. No ceremony.
+
+---
+
+## 13. Budget & Model Routing
+
+### Your Plan Constraints
+- **Pro plan**: claude.ai conversation usage does not count against API budget
+- **API burst capacity**: $25, replenishes when depleted to $10
+- **Usable burst window**: $15 before Orchestrator should be watching spend actively
+- **Session ceiling**: Set to $20 in manifest — never touch the last $5 of burst
+
+### Orchestrator Budget Behaviour
+
+| Event | Orchestrator action |
+|---|---|
+| Session start | Read `session_ceiling` and `iteration_ceiling` from manifest. If `iteration_ceiling` missing, ask operator. |
+| 75% of iteration ceiling reached | Surface status: spend to date, remaining, work completed vs scope. Continue unless operator says stop. |
+| Iteration ceiling hit | **Pause. Report state. Propose descoped continuation** that fits remaining budget. Operator approves, rejects, or tops up. Never hard-stop silently. |
+| Session ceiling approached ($18+) | Warn operator. Complete current atomic unit of work. Do not start a new iteration. |
+| Replenish floor hit ($10 remaining in burst) | Surface. Recommend deferring remaining iterations to next session. |
+
+### Model Routing Logic
+
+The Orchestrator assigns models by agent role based on reasoning demand, not preference. This is cost governance, not quality theatre.
+
+| Agent | Model | Rationale |
+|---|---|---|
+| Orchestrator | haiku | Routing and coordination — no deep reasoning needed |
+| Shaper | opus (Inception only) | Problem framing is the highest-leverage, highest-risk thinking in the entire SDLC. Wrong here = 100x cost later. Revert to sonnet post-Inception. |
+| PM | sonnet | Viability hypothesis writing requires judgment, not raw power |
+| Creative Director | sonnet | Brief and token work; nuanced but not architecturally complex |
+| Architect | sonnet | ADRs and C4 require real reasoning; Opus rarely justified |
+| Designer | sonnet | UX judgment, not brute force |
+| Builder | sonnet | Code generation quality matters; haiku produces more rework |
+| Reviewer | haiku | Checklist evaluation against known criteria — mechanical |
+| Deployer | haiku | Pipeline execution — deterministic, low reasoning |
+| Closer | haiku | Gate checklist, status updates — administrative |
+
+**Opus escalation rule**: Shaper may request Opus escalation outside Inception if a problem framing decision is genuinely novel and high-stakes. Orchestrator logs the escalation and cost delta. Operator is notified.
+
+---
+
+## 14. Reference Sources
 
 | Framework | What Canonical borrows |
 |---|---|
