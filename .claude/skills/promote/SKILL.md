@@ -1,6 +1,6 @@
 ---
 name: promote
-description: Propose promoting an app-level standard to canonical. Creates a GitHub issue on canonical with the "canonical-evolution" label.
+description: "Propose promoting an app-level standard to canonical. Creates issue in the CURRENT repo (not canonical) with canonical-evolution label."
 user_invocable: true
 disable_model_invocation: false
 ---
@@ -9,7 +9,7 @@ disable_model_invocation: false
 
 When working in any app repo and you discover a skill, rule, hook, or
 workflow pattern that should be a shared standard, run /promote to
-create a proposal on canonical.
+create a proposal **in the current repo** for canonical to ingest.
 
 ## When to use
 
@@ -25,17 +25,14 @@ create a proposal on canonical.
    - **New**: skill/rule/hook that doesn't exist in canonical yet
    - **Extension**: improvement to an existing canonical standard
    - **Pattern**: workflow insight, not a specific file
-3. **Create the issue** on canonical:
+3. **Create the issue in THIS repo** (not canonical):
 
 ```bash
-gh issue create --repo sunj-labs/canonical \
+gh issue create \
   --label "canonical-evolution" \
-  --title "Promote: [brief description]" \
+  --title "Promote to canonical: [brief description]" \
   --body "## What
 [What should be promoted — file name, content summary]
-
-## From
-[Which repo, which file path]
 
 ## Why general
 [Why this isn't app-specific — what makes it reusable]
@@ -47,11 +44,21 @@ gh issue create --repo sunj-labs/canonical \
 [Paste the relevant content or reference the file]"
 ```
 
-4. **Note in the current session's chronicle**: "Proposed promotion: [description] → canonical#NNN"
+4. **Note in the current session's chronicle**: "Proposed promotion: [description] → #NNN"
+
+## How canonical ingests these
+
+The canonical session-reflection hook scans for `canonical-evolution`
+labeled issues across child repos. During a canonical session:
+- Issues are reviewed for global applicability
+- Accepted: content promoted to canonical, source issue closed
+- Deferred: issue stays open with rationale
+- Rejected: issue closed with explanation
 
 ## Rules
 
-- Everything goes as an issue, never a direct PR from an app repo
+- Issue goes in the CURRENT repo, never directly on canonical
+- App repos should never need write access to canonical
 - Use the `canonical-evolution` label consistently
-- The canonical session is where promotion decisions are made, not the app session
+- The canonical session is where promotion decisions are made
 - Don't block app work on the promotion — log it and move on

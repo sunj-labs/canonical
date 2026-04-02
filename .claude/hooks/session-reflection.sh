@@ -150,15 +150,32 @@ for REVIEW_DIR in "docs/architecture/reviews" "architecture/reviews"; do
 done
 
 # === Canonical evolution issues (canonical sessions only) ===
+# Scans canonical AND all known child repos for promotion proposals
 REPO_NAME_CHECK=$(gh repo view --json name -q '.name' 2>/dev/null || echo "")
 if [ "$REPO_NAME_CHECK" = "platform-docs" ] || [ "$REPO_NAME_CHECK" = "canonical" ]; then
-  EVOLUTION_ISSUES=$(gh issue list -R "sunj-labs/$REPO_NAME_CHECK" --label "canonical-evolution" --state open --limit 10 2>/dev/null)
-  if [ -n "$EVOLUTION_ISSUES" ]; then
+  CHILD_REPOS="sunj-labs/poa"  # add new repos here as they're created
+  ALL_EVOLUTION=""
+
+  # Check canonical's own issues
+  CANONICAL_ISSUES=$(gh issue list -R "sunj-labs/canonical" --label "canonical-evolution" --state open --limit 10 2>/dev/null)
+  if [ -n "$CANONICAL_ISSUES" ]; then
+    ALL_EVOLUTION="${ALL_EVOLUTION}\n  From canonical:\n${CANONICAL_ISSUES}\n"
+  fi
+
+  # Check each child repo for proposals
+  for CHILD in $CHILD_REPOS; do
+    CHILD_ISSUES=$(gh issue list -R "$CHILD" --label "canonical-evolution" --state open --limit 10 2>/dev/null)
+    if [ -n "$CHILD_ISSUES" ]; then
+      ALL_EVOLUTION="${ALL_EVOLUTION}\n  From ${CHILD}:\n${CHILD_ISSUES}\n"
+    fi
+  done
+
+  if [ -n "$ALL_EVOLUTION" ]; then
     echo "### CANONICAL EVOLUTION — PENDING PROMOTIONS"
     echo ""
-    echo "$EVOLUTION_ISSUES"
-    echo ""
-    echo "Review and resolve these before other work."
+    echo -e "$ALL_EVOLUTION"
+    echo "Review and resolve these. Child repo proposals need ingestion"
+    echo "into canonical if globally applicable."
     echo ""
   fi
 fi
