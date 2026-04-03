@@ -269,14 +269,20 @@ budget:
 
 If `docs/phase-state.md` is missing, prompt:
 
-> What phase is the overall project in?
-> - **Inception** — greenfield, nothing built yet
-> - **Elaboration** — architecture being proven
-> - **Construction** — actively building and shipping
-> - **Transition** — stabilizing for handoff/release
-
-> What subsystems exist? What phase is each in?
-> (e.g., "deal pipeline: Construction, CRM: not started, notifications: not started")
+> **What phase is the overall project in?**
+> (This is the project as a whole, not any individual feature.
+> - **Inception** — greenfield, nothing built yet, still deciding what to build
+> - **Elaboration** — committed to building, proving the architecture works
+> - **Construction** — actively building and shipping features
+> - **Transition** — built, stabilizing for handoff or public release
+> Most existing apps with users are in Construction.)
+>
+> **What subsystems exist? What phase is each in?**
+> (List the major functional areas of your app and their maturity.
+> This lets the agent run different choreography for different parts.
+> Example: "deal pipeline: Construction, scoring: Construction,
+> communications: Construction, CRM: not started, notifications: not started"
+> Subsystems with no work yet can be listed as "not started.")
 
 Create using template from `strategy/agent-choreography.md` Section 6.
 The subsystem table allows different parts of the app to be at different
@@ -287,15 +293,48 @@ maturity levels.
 Prompt for each field. The iteration bet's `phase:` field determines which
 choreography runs — it can differ from the project phase.
 
-For **standard/full** (formal format):
+For **standard/full** (formal format), prompt with explanations:
 
-> What are we building this iteration? (scope)
-> What phase is THIS WORK in? (e.g., Inception for a new module)
-> What risk are we retiring?
-> What business value are we proving?
-> What's the lovability signal? (would a user choose this?)
-> What's the viability signal? (how do we measure success?)
-> Cost ceiling? Turn limit?
+> **What are we building this iteration?**
+> (One or two sentences describing the scope. Example: "CRM module for
+> tracking broker contacts and interaction history alongside deal flow."
+> This becomes the iteration's scope definition — be specific enough that
+> an agent could build it without asking follow-up questions.)
+>
+> **What phase is THIS WORK in?**
+> (The phase of this specific subsystem, not the overall project.
+> - Inception = new idea, no artifacts yet, needs a canvas and shaping
+> - Elaboration = idea is validated, architecture needs proving
+> - Construction = architecture proven, ready to build and ship
+> - Transition = built, needs deployment/stabilization/handoff
+> Example: "Inception — CRM is a new module, nothing exists yet.")
+>
+> **What risk are we retiring?**
+> (The single biggest thing that could kill this if we don't address it
+> this iteration. Format: one sentence starting with "Can we..." or
+> "Will...". Example: "Can we model CRM relationships without breaking
+> the existing deal pipeline schema?")
+>
+> **What business value are we proving?**
+> (What outcome makes this worth building? Not a feature description —
+> the business result. Example: "Operator can track broker interactions
+> in the same tool as deal flow, eliminating the spreadsheet.")
+>
+> **What's the lovability signal?**
+> (How would you know a user actually wants this? Not "it works" but
+> "they'd choose it." Example: "Would I open this instead of my
+> spreadsheet when a broker calls?")
+>
+> **What's the viability signal?**
+> (A measurable outcome or observable behavior. Example: "Time from
+> broker contact to logged interaction drops below 2 minutes." This is
+> what the PM watches to know if the iteration proved its value.)
+>
+> **What's the appetite?**
+> (Cost ceiling in dollars + turn limit as a runaway guard. The agent
+> will scope DOWN to fit this — it's a fixed budget, not an estimate.
+> Example: "$8 cost ceiling, 30 turn limit." If unsure, $8/30 is a
+> reasonable starting point for a single subsystem iteration.)
 
 Write to `docs/iteration-bets/YYYY-MM-DD-slug.md`:
 
@@ -344,8 +383,18 @@ Update `docs/phase-state.md` to point at the new bet.
 If `docs/risk-register.md` is missing and level requires it (standard/full):
 
 - Check for most recent architect review in `docs/architecture/reviews/`
-- If found, seed risks from its findings
-- Ask: "What are the top 3 risks to this project?"
+- If found, seed risks from its findings and present them:
+  "I found these risks in the latest architect review: [list].
+  Do these still apply? Any to add or remove?"
+- If no review found, ask:
+
+> **What are the top 3 risks to this project?**
+> (Things that could kill the project or this iteration if not addressed.
+> Each risk has a type: Tech (can we build it?), Market (will anyone want it?),
+> UX (will it be usable?), or Ops (can we run it?).
+> Example: "Tech: CRM schema migration could break existing deal queries.
+> Market: broker tracking may not be valuable enough to justify the complexity.
+> UX: if logging an interaction takes more than 30 seconds, nobody will do it.")
 
 ```markdown
 ## Risk Register
