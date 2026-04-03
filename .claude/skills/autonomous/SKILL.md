@@ -297,38 +297,58 @@ This is where autonomous work begins.
         4. The instruction: "Produce [artifact type] at [path]."
 ```
 
+### CRITICAL EXECUTION RULES
+
+1. **Steps are SEQUENTIAL EXCHANGES, not a single prompt wall.**
+   Each step (2 through 6) is its own turn. Ask, wait for answer,
+   process the answer, then move to the next step. Do NOT present
+   all questions at once.
+
+2. **Present prompts VERBATIM from this document.**
+   The parenthetical explanations are carefully written for the operator.
+   Do NOT summarize, compress, or rephrase them. Copy them exactly.
+
+3. **WAIT FOR CONFIRMATION between steps.**
+   After scaffolding each artifact, show what was created and ask
+   "Does this look right?" before moving to the next step.
+
+4. **Context-aware examples.**
+   When the repo is under active development (has commits, issues,
+   existing code), tailor examples to what exists:
+   - Read existing Prisma schema, routes, or components to understand
+     the domain vocabulary
+   - Reference existing GitHub issues by number
+   - Use actual entity names from the codebase in examples
+   - For a greenfield repo, use the generic examples from this document
+   This makes the prompts feel like a conversation with someone who
+   knows the project, not a generic template.
+
 ### Step-by-step detail
 
 #### Step 1: Determine level, execution mode, and gating
 
-Ask three questions. Default to sequential + human-gated if not specified.
+Use the AskUserQuestion tool to ask these. Do NOT collapse into free-text.
+
+Defaults: **sequential** execution + **human-gated**. These are assumed
+unless the operator explicitly changes them. Only ask about level — then
+state the defaults and offer to change:
 
 > **What agent level?**
-> (Which agents are active for this session.
 > - **core** — Builder + Reviewer only. You drive everything else.
 > - **standard** — + Shaper, PM, Designer, Architect (6 agents). Structured
 >   iterations with shaping and design phases.
 > - **full** — All 10 agents including Creative Director, Deployer, Closer,
->   Orchestrator. Full ceremony for production-quality work.)
->
-> **Execution mode?**
-> (How the agent performs the work.
-> - **sequential** (default) — One session plays all roles in order via
->   persona switches. Zero burst cost — runs entirely on your Max plan.
->   Best for overnight runs and simpler debugging.
-> - **parallel** — Orchestrator spawns subagents per role. Independent
->   branches fan out to worktrees. Faster but costs burst tokens from the
->   $25 API burst pool. Best when you want throughput.)
->
-> **Gating?**
-> (Who approves handoffs between roles/phases.
-> - **human-gated** (default) — Agent pauses between phases and asks you
->   to confirm before proceeding. You see what each phase produced and
->   decide whether to continue. Best for daytime sessions.
-> - **orchestrator-gated** — Agent chains through all phases autonomously
->   without pausing. You review the output (PRs, artifacts) after the
->   session completes. Best for overnight runs where you want to wake
->   up to finished work.)
+>   Orchestrator. Full ceremony for production-quality work.
+
+After level is chosen, use AskUserQuestion to confirm execution mode and gating:
+
+> **Execution mode?** (default: sequential)
+> 1. **sequential** (default) — One session, persona switches. $0 burst cost.
+> 2. **parallel** — Subagents per role, worktrees for branches. Costs burst tokens.
+
+> **Gating?** (default: human-gated)
+> 1. **human-gated** (default) — Pauses between phases for your approval.
+> 2. **orchestrator-gated** — Chains through all phases without pausing. Review PRs after.
 
 #### Step 2: Scaffold — manifest
 
@@ -414,6 +434,10 @@ Create using template from `strategy/agent-choreography.md` Section 6.
 The subsystem table allows different parts of the app to be at different
 maturity levels.
 
+**WAIT FOR CONFIRMATION.** Show the subsystem table and ask: "Does this
+look right? Adjust any phases before we continue." The iteration bet's
+phase depends on the subsystem classification — get this right first.
+
 #### Step 4: Scaffold — iteration bet
 
 Prompt for each field. The iteration bet's `phase:` field determines which
@@ -475,6 +499,11 @@ For **standard/full** (formal format), prompt with explanations:
 >
 > The agent will scope DOWN to fit — fixed budget, variable scope.
 > Example: "$8 cost ceiling, 30 turn limit.")
+>
+> **Any reference material?** (optional)
+> (Screenshots, mockups, prior art, inspiration — anything the Shaper
+> should look at when developing the canvas. Provide file paths or URLs.
+> Example: "~/Downloads/crm-inspiration" or "see POA issue #260")
 
 Write to `docs/iteration-bets/YYYY-MM-DD-slug.md`:
 
@@ -503,6 +532,9 @@ Write to `docs/iteration-bets/YYYY-MM-DD-slug.md`:
 - Cost ceiling: $X
 - Turn limit: N
 - Warning threshold: 75%
+
+**Reference material** (optional):
+- [screenshots, mockups, prior art — file paths or URLs]
 ```
 
 For **core** (light format):
