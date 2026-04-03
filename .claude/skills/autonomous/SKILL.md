@@ -75,13 +75,29 @@ it means to let the agent chain without pausing).
 Show what autonomous development is, what levels exist, and how ready
 this repo is right now.
 
-### 1. Explain the three levels
+### 1. Explain the three axes
 
-| Level | What activates | Who drives | Best for |
-|-------|---------------|-----------|----------|
-| `core` | Rules, hooks, skills. Builder + Reviewer. Light iteration bets. | Human | Day-to-day supervised work |
-| `standard` | + Architect, PM, Designer. Formal iteration bets. Phase gates. | Human or Orchestrator | Semi-autonomous: human sets direction, agents execute |
-| `full` | All 10 agents. Full ceremony. 4-signal bets. All gates enforced. | Orchestrator agent | Fully autonomous: screenshots + intent in, PRs out |
+**Agent level** — which agents are active:
+
+| Level | Agents | What's different |
+|-------|--------|-----------------|
+| `core` | Builder, Reviewer (2) | Light iteration bets. Human drives. |
+| `standard` | + Shaper, PM, Designer, Architect (6) | Formal bets. Phase gates. Shaping + design. |
+| `full` | + Creative Director, Deployer, Closer, Orchestrator (10) | Full ceremony. Production releases. |
+
+**Execution mode** — how work runs (default: sequential):
+
+| Mode | Burst cost | How it works |
+|------|-----------|-------------|
+| sequential | $0 (Pro plan) | One session, persona switches between roles |
+| parallel | Burst tokens | Subagents spawned per role, worktrees for branches |
+
+**Gating** — who approves handoffs (default: human-gated):
+
+| Gating | When to use |
+|--------|-----------|
+| human-gated | Daytime sessions, learning the system, steering |
+| orchestrator-gated | Overnight runs, trusted workflows |
 
 ### 2. Quick readiness check
 
@@ -274,14 +290,36 @@ This is where autonomous work begins.
 
 ### Step-by-step detail
 
-#### Step 1: Determine level
+#### Step 1: Determine level, execution mode, and gating
 
-If level is provided as argument, use it. Otherwise ask:
+Ask three questions. Default to sequential + human-gated if not specified.
 
-> What process level?
-> - **core** — I'll drive, agents assist (default for existing repos)
-> - **standard** — I'll set direction, agents execute with phase gates
-> - **full** — Agents run the full SDLC, I review PRs
+> **What agent level?**
+> (Which agents are active for this session.
+> - **core** — Builder + Reviewer only. You drive everything else.
+> - **standard** — + Shaper, PM, Designer, Architect (6 agents). Structured
+>   iterations with shaping and design phases.
+> - **full** — All 10 agents including Creative Director, Deployer, Closer,
+>   Orchestrator. Full ceremony for production-quality work.)
+>
+> **Execution mode?**
+> (How the agent performs the work.
+> - **sequential** (default) — One session plays all roles in order via
+>   persona switches. Zero burst cost — runs entirely on your Max plan.
+>   Best for overnight runs and simpler debugging.
+> - **parallel** — Orchestrator spawns subagents per role. Independent
+>   branches fan out to worktrees. Faster but costs burst tokens from the
+>   $25 API burst pool. Best when you want throughput.)
+>
+> **Gating?**
+> (Who approves handoffs between roles/phases.
+> - **human-gated** (default) — Agent pauses between phases and asks you
+>   to confirm before proceeding. You see what each phase produced and
+>   decide whether to continue. Best for daytime sessions.
+> - **orchestrator-gated** — Agent chains through all phases autonomously
+>   without pausing. You review the output (PRs, artifacts) after the
+>   session completes. Best for overnight runs where you want to wake
+>   up to finished work.)
 
 #### Step 2: Scaffold — manifest
 
@@ -545,21 +583,13 @@ The agent walks through the choreography in order. Between each role:
 4. Execute that role's steps from the choreography
 5. Write output artifact, then switch to next role
 
-At **standard** (sequential): pauses between phases for human approval.
-"Phase [X] complete. Artifacts produced: [list]. Ready to begin [Y]. Confirm?"
-
-At **full** (sequential): chains through all phases without pausing.
-Human reviews the output (PRs, artifacts) after the session completes.
-Ideal for overnight runs — start it, go to sleep, review PRs in the morning.
-
 For multi-branch Construction work in sequential mode: the agent writes a
 stack manifest, then builds one branch at a time (no worktree parallelism).
 
-**Parallel mode (opt-in with `parallel` flag):**
+**Parallel mode:**
 
 Orchestrator spawns subagents. Each role is a separate agent invocation.
 
-At **standard** (parallel):
 - The current session becomes the Orchestrator
 - Each role agent is spawned as a subagent (via the Agent tool with the
   matching `subagent_type`, e.g., `Shaper`, `Builder`, `Architect`)
@@ -567,18 +597,20 @@ At **standard** (parallel):
   1. The iteration bet (scope, phase, appetite)
   2. Relevant substrate artifacts (canvas, spec, design docs, screenshots)
   3. A clear instruction: "Produce [artifact] at [path]. Signal when done."
-- Human approves each handoff between agents
 - Multi-branch work: worktree agents (`claude -w`) for independent branches
-
-At **full** (parallel):
-- Same mechanics, but the Orchestrator chains through handoffs autonomously
-- Human reviews PRs and phase gate results, not individual handoffs
-- Parallel worktree agents for independent branches
 - Orchestrator manages budget, appetite, and conflict detection
+- Burst cost: each subagent spawn consumes API burst tokens
 
-Burst cost: each subagent spawn consumes API burst tokens.
+**Gating (applies to both execution modes):**
 
-**At core level** (either mode):
+- **Human-gated**: Agent pauses between phases for approval.
+  "Phase [X] complete. Artifacts produced: [list]. Ready to begin [Y]. Confirm?"
+  Best for daytime sessions where you want to steer.
+- **Orchestrator-gated**: Agent chains through all phases without pausing.
+  Human reviews output (PRs, artifacts) after session completes.
+  Ideal for overnight — start it, sleep, review PRs in the morning.
+
+**At core level** (either mode, either gating):
 - Report complete. Human drives from here.
 - Skills and rules are active. Use `/temperance` before building, `/verify` after.
 - The iteration bet and phase-state are reference artifacts for the human.
