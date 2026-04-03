@@ -317,7 +317,7 @@ known path that the next agent reads. No verbal state. No implicit context.
 | Transition | Release Notes | `docs/release-notes/YYYY-MM-DD.md` | Deployer | Closer, PM |
 | Transition | Runbook | `docs/runbooks/` | Deployer | Operator |
 | Transition | Retrospective | `docs/retros/YYYY-MM-DD.md` | Closer | Orchestrator |
-| Transition | Chronicle | `docs/chronicle/YYYY-MM-DD-slug.md` | Closer | Next session |
+| Phase transition | Chronicle | **Check repo first**: use existing chronicle dir (`docs/chronicle/`, `docs/design/chronicle/`, or `chronicle/`). If none exists, create `docs/chronicle/`. Never assume a path — read the repo. | Closer (or any agent at phase boundary) | Next session |
 
 ### Handoff mechanics
 
@@ -497,6 +497,7 @@ rationale. MAY gates are best practice.
 | Designer sign-off | Every PR with UI changes | Designer validates implementation matches intent | Reviewer (checks sign-off exists) |
 | Handoff artifact | Every role transition | Substrate artifact at known path. No verbal state. | Orchestrator |
 | Phase-state update | Every checkpoint (see Section 10) | `docs/phase-state.md` reflects current reality | Orchestrator |
+| Artifact verification | After claiming to produce any artifact | Verify the file exists at the claimed path. Read the first few lines to confirm it's not empty. If the path is wrong or the file doesn't exist, fix it before reporting completion. Never claim an artifact was produced without verifying. | All agents |
 
 ### SHOULD gates — defer only with documented rationale
 
@@ -687,11 +688,17 @@ In parallel mode: the Orchestrator triggers the Closer subagent at each boundary
 **LinkedIn drafts** (SHOULD — at role handoffs and phase transitions):
 - Each agent, before handing off, asks: "Did this phase produce a
   notable decision, trade-off, or insight worth sharing?"
-- If yes: write a draft to `docs/linkedin-drafts/YYYY-MM-DD-slug.md`
+- If yes: create `docs/linkedin-drafts/` if it doesn't exist, then write
+  a draft to `docs/linkedin-drafts/YYYY-MM-DD-slug.md`
+- **Verify the file exists after writing.** If it doesn't, the draft wasn't
+  written — fix it before proceeding with the handoff.
 - These are raw drafts — the reasoning while it's fresh
 - At iteration end, the Closer polishes drafts into a final post
 - If Google Doc auth isn't available, drafts stay in `docs/linkedin-drafts/`
 - The best posts come from Inception and Elaboration, not Construction
+- **High-value handoffs for LinkedIn**: Shaper killing scope (what was cut
+  and why), Architect choosing boring tech, Designer pushing back on PM,
+  PM invalidating a viability hypothesis
 
 **The guarantee**: even if a session dies mid-flight, the checkpoint
 protocol ensures phase-state is current at the last role handoff, and a
