@@ -472,3 +472,109 @@ For agents unsure who to escalate to:
 | "How do I deploy this?" | Deployer |
 | "Are we done?" | Closer |
 | "Who resolves this conflict?" | Orchestrator |
+
+---
+
+## 9. Deterministic Gates (MUST / SHOULD / MAY)
+
+These gates determine trustworthy execution. MUST gates cannot be skipped
+under any circumstances. SHOULD gates can be deferred with documented
+rationale. MAY gates are best practice.
+
+### MUST gates — never skip, no exceptions
+
+| Gate | When | What | Who enforces |
+|------|------|------|-------------|
+| `/verify` after each task | After every build task, before commit | Run verification appropriate to change type | Builder |
+| Tests pass | Before every commit of source code | New exported function = new test. No "I'll add tests later." | Builder, Reviewer |
+| `/temperance` before non-trivial work | Before any implementation that touches >1 file or modifies behavior | Pause: simplest approach? brute-forcing? blast radius? | Builder |
+| `/diagnose` before any fix | Any observed failure, before writing fix code | Is/Is Not + Five Whys + Hypothesis. No retry without understanding. | Builder |
+| Chronicle at session end | Every session, no exceptions | Write to chronicle directory. Captures decisions + open threads. | Closer (or any agent at session end) |
+| Conventional commits | Every commit | Type: description, imperative mood, references issue | Builder |
+| ADR compliance | Every PR in Construction | No accepted ADR violated. Violations are blockers. | Reviewer |
+| Designer sign-off | Every PR with UI changes | Designer validates implementation matches intent | Reviewer (checks sign-off exists) |
+| Handoff artifact | Every role transition | Substrate artifact at known path. No verbal state. | Orchestrator |
+| Phase-state update | Every checkpoint (see Section 10) | `docs/phase-state.md` reflects current reality | Orchestrator |
+
+### SHOULD gates — defer only with documented rationale
+
+| Gate | When | What |
+|------|------|------|
+| Architect review | Every 10 commits | Full architectural review. Schedule as first task if overdue. |
+| Risk register review | Each iteration start | Surface open risks, confirm iteration addresses top risk. |
+| Stale artifact cleanup | Session start | Write missing chronicles, danger summaries before new work. |
+| Usability check | UI changes | 7-point check per standards/usability-check.md. |
+
+### MAY gates — best practice, not enforced
+
+| Gate | When | What |
+|------|------|------|
+| LinkedIn post | Session shipped something notable | Draft post to configured destination. |
+| Release notes | User-facing changes deployed | Plain language for least technical stakeholder. |
+| Danger mode summary | Auto-complete was used | Compact audit trail of autonomous decisions. |
+
+---
+
+## 10. Checkpointing Protocol
+
+Checkpoints ensure that if a session dies at any point, the next session
+can resume from a known state rather than restarting.
+
+### When to checkpoint
+
+Every agent checkpoints after completing a meaningful unit of work:
+
+| Agent | Checkpoint after | What to persist |
+|-------|-----------------|----------------|
+| Shaper | Each canvas stage, risk register | Canvas file + phase-state update |
+| PM | Viability hypothesis, iteration bet | Bet file + phase-state update |
+| Creative Director | Creative brief, design tokens | Brief file + phase-state update |
+| Architect | Each ADR, C4 diagram | ADR/diagram file + phase-state update |
+| Designer | Each UX artifact (HTA, IA, flows) | Artifact file + phase-state update |
+| Builder | Each task (not batched) | Commit + phase-state + stack manifest update |
+| Reviewer | Each PR review | Review result in PR + phase-state update |
+| Deployer | Each deploy step | Deploy status + phase-state update |
+| Closer | Each closure artifact | Artifact file + phase-state update |
+| Orchestrator | Every handoff, phase transition | Phase-state is your primary artifact |
+
+### How to checkpoint
+
+1. **Commit the artifact** — conventional commit, references issue
+2. **Update `docs/phase-state.md`** — current agent, what's done, what's next
+3. **Push** — if network available. If not, commit locally (push on next opportunity).
+
+### Resume protocol
+
+On `/autonomous start`, Step 6 (Resolve Stale Artifacts) checks for
+partial state. If `docs/phase-state.md` shows work in progress:
+
+1. Read the phase-state to understand where the last session stopped
+2. Read the last committed artifacts to verify they're complete
+3. Present to operator: "Last session stopped during [phase], [agent]
+   was working on [task]. Completed: [list]. Remaining: [list].
+   Resume from here, or restart?"
+4. On resume: activate the agent that was interrupted, pointing it at
+   the remaining work
+5. On restart: operator decides what to keep/discard
+
+---
+
+## 11. Luminaries Reference
+
+Each agent boots with awareness of the thinkers who inform their discipline.
+These are codified in the agent definitions at `~/.claude/agents/*.md`.
+
+| Discipline | Key luminaries |
+|-----------|----------------|
+| Business Modeling / Shaping | Christensen (JTBD), Amazon (PR/FAQ), Ohno (Five Whys), Wu (Anthropic) |
+| Product Strategy | Christensen (JTBD), Kalbach (JTBD Playbook), DORA (metrics), Lean Canvas |
+| Architecture | Brown (C4), Nygard (ADRs), Martin (SOLID), Evans (DDD), Larman (UML) |
+| UX / Design | Annett/Duncan (HTA), Prater (OOUX), Cooper (Goal-Directed), Norman, Morville/Rosenfeld (IA), Covert, Wurman (LATCH), Cohn (User Stories), Tidwell (Interaction Patterns) |
+| Creative Direction | Lupton (Storytelling, Typography), Albers (Color), Apple HIG, Google Material |
+| Implementation | GoF (Design Patterns), Fowler (Enterprise Patterns), Martin (SOLID), Beck/Cunningham (TDD), Conventional Commits |
+| Testing / Review | Martin (SOLID), Fowler (Patterns), Beck (TDD), Brown (C4 boundaries) |
+| Problem Solving | Ohno (Five Whys), Kepner-Tregoe (Is/Is Not) |
+| Deployment / Operations | DORA (metrics), Mermaid (diagrams) |
+| Coordination | Cherny (Anthropic, worktrees), Wu (Anthropic, process), Ordax (.claude infrastructure) |
+
+Source document: `~/Documents/AI Exchange/sdlc-luminaries.docx`

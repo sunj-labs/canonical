@@ -248,8 +248,17 @@ This is where autonomous work begins.
   │
   ├─ Step 8: REPORT + CONFIRM
   │   → Output boot report (same format as dry-run)
-  │   → Show: level, phase (from iteration bet), agents to activate,
-  │     first action, appetite remaining
+  │   → Show the PERSONALIZED EXECUTION CHAIN for this directory:
+  │     "Here's what will happen in [repo name], in this order:"
+  │     1. [Agent] will produce [artifact] at [actual path in this repo]
+  │     2. [Agent] will produce [artifact] at [actual path]
+  │     3. ... (full chain based on phase + level + active agents)
+  │     MUST gates that will fire: [list from choreography Section 9]
+  │     Checkpoints: after each step above
+  │     Gating: [human/orchestrator] — where pauses happen
+  │     Estimated artifacts: N files across M directories
+  │   → Show: level, execution mode, gating, phase (from bet),
+  │     appetite remaining
   │   → "Confirm to begin, or adjust."
   │   → WAIT FOR OPERATOR CONFIRMATION
   │
@@ -555,15 +564,39 @@ should PASS. If any FAIL → stop, report, fix before continuing.
 
 #### Step 8: Report + confirm
 
-Output the boot report. Then:
+Output the boot report WITH a personalized execution chain for this
+directory. The operator must see exactly what will happen before confirming.
 
-> **Boot status: READY at [level]**
+> **Boot status: READY**
 >
-> **Iteration**: [name] (phase: [from bet])
-> **First action**: [what agent activates first, what it will produce]
+> **Configuration**: [level] / [sequential|parallel] / [human|orchestrator]-gated
+> **Iteration**: [name] (phase: [from bet], subsystem: [name])
 > **Appetite**: $X / N turns
 >
+> **Execution chain for [repo name]:**
+>
+> | Step | Agent | Produces | Path | MUST gates |
+> |------|-------|----------|------|-----------|
+> | 1 | Shaper | Product canvas (Thesis) | docs/strategy/canvases/... | /temperance |
+> | 2 | Shaper | Risk register | docs/risk-register.md | — |
+> | 3 | PM | Viability hypothesis | in canvas | — |
+> | 4 | PM | Iteration bet (Construction) | docs/iteration-bets/... | — |
+> | ⏸ | — | **Human checkpoint** (if human-gated) | — | — |
+> | 5 | Architect | C4 diagrams | docs/architecture/c4/... | /temperance |
+> | 6 | Architect | ADRs | docs/architecture/decisions/... | ADR compliance |
+> | ... | ... | ... | ... | ... |
+>
+> **Checkpoints**: After every step above (phase-state updated, artifact committed)
+> **MUST gates that will fire**: /temperance, /verify, /diagnose (on failure), tests, chronicle
+> **Estimated output**: ~N artifacts across M directories
+>
 > Confirm to begin, or adjust.
+
+The chain must be built from:
+1. The iteration bet's phase → which choreography from Section 3
+2. The agent level → which agents are active
+3. The repo's actual directory structure → real paths, not templates
+4. The MUST gates from choreography Section 9
 
 **Wait for operator confirmation before activating any agents.**
 
