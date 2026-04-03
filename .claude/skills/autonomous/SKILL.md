@@ -169,8 +169,10 @@ budget:
 ```
 
 **docs/phase-state.md** (standard/full — recommended for core):
-- Ask: "What phase are we in?" (Inception if greenfield, Construction if app exists)
-- Ask: "What iteration?" (1 if starting fresh)
+- Ask: "What phase is the overall project in?" (Inception if greenfield, Construction if app exists)
+- Ask: "What subsystems exist and what phase is each in?"
+- The project phase is the default; iteration bets override it per-subsystem
+  (e.g., project=Construction but CRM iteration bet says phase=Inception)
 - Create using template from `strategy/agent-choreography.md` Section 6
 
 **Iteration bet** (standard/full — light format for core):

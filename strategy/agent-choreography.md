@@ -29,6 +29,10 @@ executes this checklist in order. No work is scheduled until all steps pass.
    → Read the active iteration bet (path in phase-state.md)
    → Validate: risk + value + lovability + viability signal all present
    → If incomplete → do not schedule. Flag to operator.
+   → NOTE: The iteration bet declares its own phase (e.g., Inception for a
+     new subsystem even if the project is broadly in Construction). Use the
+     iteration bet's phase for choreography, not the project-level phase.
+     This allows subsystems at different maturity levels in the same repo.
 
 4. MAP SKILLS TO AGENTS
    → Read all .claude/skills/*/SKILL.md files
@@ -97,6 +101,18 @@ The Orchestrator binds these at session init. Agents do not self-assign skills.
 ---
 
 ## 3. Phase Choreography
+
+The Orchestrator selects the choreography based on the **iteration bet's phase**,
+not the project-level phase. A mature app (project phase: Construction) can run
+Inception choreography for a new subsystem if the iteration bet says so.
+
+This means a single repo can have:
+- Deal pipeline → Construction (shipping, tested, stable)
+- CRM module → Inception (canvas, shaping, risk identification)
+- Notifications → Elaboration (architecture, design artifacts)
+
+Each iteration bet declares its phase. The Orchestrator runs the matching
+choreography below.
 
 ### Inception — "Is this worth building?"
 
@@ -361,25 +377,41 @@ single source of truth for "where are we."
 ```markdown
 # Phase State
 
-## Current
+## Project-level phase
 phase: Construction
-iteration: 2
+note: The project as a whole is in Construction. Individual subsystems
+      may be at different phases — see iteration bets for specifics.
+
+## Active iteration
 iteration_bet: docs/iteration-bets/2026-04-02-crm-build.md
+iteration_phase: Inception  ← this overrides project phase for choreography
 branch_stack: docs/branch-stacks/2026-04-02-crm-stack.md
 
 ## Active agents
-- Builder (construction, stack-2-api-routes)
-- Reviewer (awaiting stack-1 PR)
+- Shaper (inception, CRM canvas)
+- PM (awaiting Shaper handoff)
 
-## Gate progress
-### Inception — COMPLETE (2026-03-28)
+## Subsystem phases
+Tracks maturity of each subsystem independently. The Orchestrator uses the
+iteration bet's phase for choreography, not the project-level phase.
+
+| Subsystem | Phase | Last iteration | Notes |
+|-----------|-------|---------------|-------|
+| Deal pipeline | Construction | 2026-04-01 | Stable, 500+ tests |
+| Scoring & enrichment | Construction | 2026-03-30 | SDE-aware scoring live |
+| Communications | Construction | 2026-04-02 | Email parser, outreach confirmation |
+| CRM | Inception | — | New subsystem, no artifacts yet |
+| Notifications | Not started | — | — |
+
+## Gate progress (project-level)
+### Inception — COMPLETE (2026-03-15)
 - [x] Vision doc with scope boundary
 - [x] Risk register populated
 - [x] Appetite set
 - [x] Viability hypothesis written
 - [x] Build/buy/defer: BUILD
 
-### Elaboration — COMPLETE (2026-04-01)
+### Elaboration — COMPLETE (2026-03-22)
 - [x] C4 diagrams
 - [x] Riskiest unknowns resolved
 - [x] ADRs accepted
@@ -388,9 +420,10 @@ branch_stack: docs/branch-stacks/2026-04-02-crm-stack.md
 - [x] Construction iteration plan
 
 ### Construction — IN PROGRESS
-- [x] Iteration 1: data model + schema (stack-1)
-- [ ] Iteration 2: API routes + list view (stack-2, stack-3)
-- [ ] Iteration 3: detail view + integration (stack-4)
+- [x] Deal pipeline: sourcing, scoring, enrichment
+- [x] Communications: digests, outreach, confirmation parsing
+- [ ] CRM: inception pending
+- [ ] Ceremony: family voting live, deployment pending
 
 ## Risk register
 See docs/risk-register.md
