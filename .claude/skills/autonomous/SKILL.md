@@ -138,7 +138,8 @@ This is where autonomous work begins.
   │   → If substrate.config.md MISSING → create interactively
   │   → If EXISTS but level DIFFERS from requested → UPDATE it
   │     (upgrade agents list, iterations format, risk-register flag)
-  │   → Confirm budget: session_ceiling, iteration_ceiling (ALWAYS ASK)
+  │   → Confirm budget: iteration_ceiling (ALWAYS ASK)
+  │     (burst pool, not Pro plan — explain the difference)
   │
   ├─ Step 3: SCAFFOLD — phase state
   │   → If docs/phase-state.md MISSING → create interactively:
@@ -229,13 +230,20 @@ If level is provided as argument, use it. Otherwise ask:
 Read `substrate.config.md`. Three cases:
 
 - **Missing**: Create interactively with the selected level.
-- **Exists, same level**: No change needed. Confirm budget.
+- **Exists, same level**: No change needed. Confirm iteration_ceiling.
 - **Exists, different level**: Update it. Specifically:
   - `level:` → new level
   - `agents:` → expanded agent list for new level
   - `iterations:` → `formal` if standard/full
   - `risk-register:` → `yes` if standard/full
   - Budget: confirm iteration_ceiling (ALWAYS ASK, never assume)
+
+When confirming budget, explain the distinction:
+> Your Max plan covers all interactive Claude Code usage. The budget here
+> governs the **API burst pool** — a separate $25 pool that's consumed when
+> the Orchestrator spawns subagents or runs headless agents. It replenishes
+> when it drops to $10. The session ceiling ($20) leaves a $5 buffer.
+> How much burst budget for this iteration?
 
 ```markdown
 # substrate.config.md
@@ -259,10 +267,23 @@ iterations: [light (core) | formal (standard/full)]
 risk-register: [no (core) | yes (standard/full)]
 
 ## Budget
+#
+# Context: The Max plan ($100/month) covers all interactive Pro usage
+# (conversations in Claude Code). The budget below governs API burst
+# usage — tokens consumed when the Orchestrator spawns subagents,
+# runs headless agents (claude -p), or fans out worktree agents.
+#
+# At core level (human driving, no subagent spawning), burst usage
+# is typically zero. At standard/full, each subagent spawn may
+# consume API tokens outside the Pro plan.
+#
+# The API burst pool ($25) replenishes when it drops to $10.
+# session_ceiling should leave a safety margin (never touch last $5).
+#
 budget:
-  session_ceiling: $20
-  iteration_ceiling: [ASK — never assume a default]
-  warning_threshold: 75%
+  session_ceiling: $20         # max API burst per session (leave $5 buffer)
+  iteration_ceiling: [ASK]     # max burst per iteration (never assume)
+  warning_threshold: 75%       # Orchestrator surfaces status at this %
 ```
 
 #### Step 3: Scaffold — phase state
@@ -331,10 +352,24 @@ For **standard/full** (formal format), prompt with explanations:
 > what the PM watches to know if the iteration proved its value.)
 >
 > **What's the appetite?**
-> (Cost ceiling in dollars + turn limit as a runaway guard. The agent
-> will scope DOWN to fit this — it's a fixed budget, not an estimate.
-> Example: "$8 cost ceiling, 30 turn limit." If unsure, $8/30 is a
-> reasonable starting point for a single subsystem iteration.)
+> (Two numbers: a cost ceiling in dollars and a turn limit.
+>
+> **Cost ceiling** governs API burst usage — tokens consumed when the
+> Orchestrator spawns subagents or runs headless agents. Your Max plan
+> covers all interactive Pro usage (conversations in Claude Code). The
+> burst pool is separate — a $25 pool that replenishes when it drops
+> to $10. The ceiling prevents a runaway session from draining it.
+> - At core level (you driving, no subagent spawning), burst is typically $0
+> - At standard/full, each subagent spawn costs burst tokens
+> - $8 is reasonable for one iteration; $12 for multi-agent sessions
+>
+> **Turn limit** is a hard stop on agent turns before the Orchestrator
+> pauses and reports. Prevents infinite loops.
+> - 30 turns for a focused iteration
+> - 50 turns for multi-branch autonomous work
+>
+> The agent will scope DOWN to fit — fixed budget, variable scope.
+> Example: "$8 cost ceiling, 30 turn limit.")
 
 Write to `docs/iteration-bets/YYYY-MM-DD-slug.md`:
 
