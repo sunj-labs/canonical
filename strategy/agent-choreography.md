@@ -583,6 +583,94 @@ Source document: `~/Documents/AI Exchange/sdlc-luminaries.docx`
 
 ---
 
+## 12a. Context Management Strategy
+
+Long-running autonomous sessions will hit context window limits. This is
+not a failure — it's expected. The strategy prevents it from degrading
+execution quality.
+
+### The problem
+
+In sequential mode, one session plays all roles. By the time the Builder
+starts Construction, the context may be 70%+ full from Inception and
+Elaboration artifacts. The agent loses awareness of the spec, the iteration
+bet, and the MUST gates.
+
+### Strategy by execution mode
+
+**Parallel mode** (Cherny's approach — context is not a problem):
+- Each subagent/worktree agent has its own fresh context
+- Scope is atomic: one branch, one task, one agent
+- Context never fills because the work is small
+- This is why parallel mode is more reliable for large builds
+
+**Sequential mode** (one session — requires active management):
+
+The agent MUST manage context proactively using three mechanisms:
+
+#### 1. Checkpoint-and-reload at role transitions
+
+When switching roles (e.g., Shaper → PM → Architect → Builder):
+- Commit all artifacts from the current role
+- The handoff artifact IS the context for the next role
+- The next role reads ONLY what it needs:
+  - Its agent definition (`~/.claude/agents/{role}.md`)
+  - The iteration bet
+  - The handoff artifact from the previous role
+  - The MUST gates from this document (Section 9)
+- Everything else can be compacted away
+
+#### 2. Context budget awareness
+
+| Context level | Action |
+|--------------|--------|
+| < 50% | Normal operation |
+| 50-70% | Start being selective about what to read. Use Glob/Grep, not full file reads. |
+| 70% | **Checkpoint now.** Commit all work. Write phase-state. The system will auto-compact prior messages. Ensure the iteration bet, current spec, and MUST gates survive compaction by re-reading them after compaction. |
+| 90% | **Phase transition or branch boundary.** Complete the current atomic task, commit, update phase-state. If more work remains, the session can continue (compaction will free space) but re-read critical context. |
+
+#### 3. Critical context that must survive compaction
+
+After any compaction event, the agent MUST re-read these files to
+ensure they're in the active window:
+
+1. **Iteration bet** — scope, phase, appetite, acceptance criteria
+2. **Current spec** — what's being built
+3. **MUST gates** — Section 9 of this document (or the rules in CLAUDE.md)
+4. **Phase-state** — where we are, what's done, what's next
+5. **Branch stack manifest** — if in Construction, which branch, what's left
+6. **Current agent definition** — luminaries, checkpointing, rules
+
+These six files are the "survival kit." If compaction drops them, re-read
+before continuing.
+
+### Session-end artifacts in autonomous mode
+
+Chronicles and LinkedIn posts are part of the session-end protocol and
+are MUST/SHOULD gates respectively. In autonomous mode:
+
+**Chronicle** (MUST — enforced by Section 9):
+- The Closer role writes the chronicle during Transition phase
+- In sequential mode: the agent switches to Closer persona at session end
+- In parallel mode: the Closer subagent is spawned at session end
+- If the session dies before Transition: the checkpointing protocol
+  (Section 10) ensures phase-state is current. The next session's
+  session-start protocol detects the missing chronicle and writes it
+  before starting new work (Step 7 in the boot sequence).
+
+**LinkedIn post** (MAY gate — but recommended for notable work):
+- Written by the Closer during Transition
+- If the session shipped something worth sharing, draft it
+- If Google Doc auth isn't available, write to `docs/linkedin-drafts/`
+- Not a blocker — skip if the session produced only infrastructure work
+
+**The guarantee**: even if an autonomous session dies mid-flight, the
+checkpoint protocol ensures phase-state is current, and the next
+session's boot sequence will detect and write missing chronicles before
+starting new work. No session history is lost.
+
+---
+
 ## 12. Branching Strategy by Autonomous Mode
 
 Every autonomous mode uses stacked atomic branches (see `standards/branch-stacking.md`).

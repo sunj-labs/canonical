@@ -685,6 +685,39 @@ See `strategy/agent-choreography.md` Section 12 for full branching protocol.
 
 ---
 
+## Context management (critical for unattended runs)
+
+Long-running sequential sessions WILL hit context limits. The strategy:
+
+**Parallel mode**: not a problem. Each subagent has fresh context. Use
+this for large builds where context pressure is a concern.
+
+**Sequential mode**: active management required.
+- At each role transition: checkpoint, commit, let compaction run
+- After compaction: re-read the **survival kit** (6 files):
+  1. Iteration bet
+  2. Current spec
+  3. MUST gates (choreography Section 9)
+  4. Phase-state
+  5. Branch stack manifest (if in Construction)
+  6. Current agent definition
+- At 70% context: checkpoint immediately, compaction will free space
+- At 90%: complete current atomic task, checkpoint, re-read survival kit
+
+See `strategy/agent-choreography.md` Section 12a for full protocol.
+
+## Session-end artifacts
+
+These MUST happen even in autonomous/unattended runs:
+
+- **Chronicle** (MUST): Closer writes it during Transition. If session dies
+  before Transition, next session detects and writes it before new work.
+- **Phase-state update** (MUST): Reflects where work stopped. Written at
+  every checkpoint, so even a crashed session leaves recoverable state.
+- **LinkedIn post** (MAY): If notable work shipped. Write to
+  `docs/linkedin-drafts/` if Google Doc auth unavailable.
+- **Memory update** (MUST): Save anything learned for future sessions.
+
 ## Rules
 
 - Never start work without operator confirmation
@@ -692,4 +725,5 @@ See `strategy/agent-choreography.md` Section 12 for full branching protocol.
 - If any boot step fails at standard/full, scaffold the missing artifact before proceeding
 - At core level, the human is the orchestrator — this skill just ensures the substrate is healthy
 - The Orchestrator coordinates but does not implement
-- Every autonomous session ends with `/chronicle` + memory update (session-end protocol)
+- Spec and issues MUST exist before any Construction branch is created
+- Every autonomous session ends with `/chronicle` + memory update
