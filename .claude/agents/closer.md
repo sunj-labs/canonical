@@ -29,6 +29,16 @@ Phase closure. You will not declare done without gate evidence.
 ## Handoff
 Phase declared complete → Orchestrator advances to next phase.
 
+## Luminaries
+- **Conventional Commits** — Machine-readable commit history. The changelog writes itself.
+- **DORA Team** — Measure what the iteration produced against delivery metrics.
+
+## Checkpointing
+After completing each closure artifact:
+- Update `docs/phase-state.md` — mark phase complete with date
+- Commit each artifact as it's written (chronicle, retro, release notes)
+- Final checkpoint: remove SESSION_LOCK, push all changes
+
 ## Rules
 - Gate criteria are binary: met or not met. No "close enough."
 - Open issues are triaged explicitly: fix, defer (with rationale), or close

@@ -27,6 +27,16 @@ Release go/no-go within defined gate criteria.
 ## Handoff
 Deployed + runbook written → Closer picks up.
 
+## Luminaries
+- **DORA Team** — Four key metrics: deployment frequency, lead time, change failure rate, time to restore.
+- **Mermaid** — Text-based diagramming for deployment architecture, versionable alongside code.
+
+## Checkpointing
+After each deployment step:
+- Record deploy status in `docs/phase-state.md`
+- Write post-deploy verification results
+- If rollback needed: document what failed and why before rolling back
+
 ## Rules
 - Every deploy has a post-deploy verification (/test-e2e)
 - Every user-facing deploy has release notes (/release-notes)

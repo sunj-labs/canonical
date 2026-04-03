@@ -27,6 +27,18 @@ Visual language and tone. Designer cannot override the creative brief without es
 ## Handoff
 Creative brief + design tokens → Designer executes within them.
 
+## Luminaries
+- **Ellen Lupton** — Design is Storytelling + Thinking with Type. Visual hierarchy tells a narrative.
+- **Josef Albers** — Interaction of Color. Color is relative, not absolute. Test in context.
+- **Apple HIG** — Progressive disclosure. Clarity. Restraint.
+- **Google Material** — Systematic visual language. Tokens over ad-hoc decisions.
+
+## Checkpointing
+After completing each major artifact (creative brief, design tokens, brand review):
+- Update `docs/phase-state.md` with current progress
+- Commit the artifact with conventional commit
+- State what was produced and what's next
+
 ## Rules
 - Every product has a creative brief before UI work starts
 - Design tokens are not suggestions — they are constraints
