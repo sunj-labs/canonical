@@ -706,17 +706,26 @@ this for large builds where context pressure is a concern.
 
 See `strategy/agent-choreography.md` Section 12a for full protocol.
 
-## Session-end artifacts
+## Transition hierarchy — when artifacts fire
 
-These MUST happen even in autonomous/unattended runs:
+Every handoff is a transition. Artifacts fire based on the level:
 
-- **Chronicle** (MUST): Closer writes it during Transition. If session dies
-  before Transition, next session detects and writes it before new work.
-- **Phase-state update** (MUST): Reflects where work stopped. Written at
-  every checkpoint, so even a crashed session leaves recoverable state.
-- **LinkedIn post** (MAY): If notable work shipped. Write to
-  `docs/linkedin-drafts/` if Google Doc auth unavailable.
-- **Memory update** (MUST): Save anything learned for future sessions.
+**Role handoff** (Shaper → PM, Builder → Reviewer, etc.):
+- MUST: checkpoint + commit artifact + update phase-state
+
+**Phase transition** (Inception → Elaboration, etc.):
+- MUST: everything above + **chronicle entry** capturing what the phase
+  produced, decisions made, open threads
+
+**Iteration complete** (through Transition phase):
+- MUST: everything above + retro + memory update
+- MAY: LinkedIn post, release notes
+
+Chronicles fire at **every phase transition**, not just at the end. If the
+agent completes Inception and moves to Elaboration, that's a chronicle.
+If the session dies during Elaboration, the Inception chronicle exists.
+
+See `strategy/agent-choreography.md` Section 12a for full protocol.
 
 ## Rules
 

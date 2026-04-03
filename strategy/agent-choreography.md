@@ -491,7 +491,7 @@ rationale. MAY gates are best practice.
 | Tests pass | Before every commit of source code | New exported function = new test. No "I'll add tests later." | Builder, Reviewer |
 | `/temperance` before non-trivial work | Before any implementation that touches >1 file or modifies behavior | Pause: simplest approach? brute-forcing? blast radius? | Builder |
 | `/diagnose` before any fix | Any observed failure, before writing fix code | Is/Is Not + Five Whys + Hypothesis. No retry without understanding. | Builder |
-| Chronicle at session end | Every session, no exceptions | Write to chronicle directory. Captures decisions + open threads. | Closer (or any agent at session end) |
+| Chronicle at phase transition | Every phase transition + iteration end | Write to chronicle directory. Captures what the phase produced, decisions made, open threads. A role handoff within a phase updates phase-state; a phase transition writes a chronicle. | Orchestrator triggers, Closer writes |
 | Conventional commits | Every commit | Type: description, imperative mood, references issue | Builder |
 | ADR compliance | Every PR in Construction | No accepted ADR violated. Violations are blockers. | Reviewer |
 | Designer sign-off | Every PR with UI changes | Designer validates implementation matches intent | Reviewer (checks sign-off exists) |
@@ -644,30 +644,47 @@ ensure they're in the active window:
 These six files are the "survival kit." If compaction drops them, re-read
 before continuing.
 
-### Session-end artifacts in autonomous mode
+### Transition hierarchy — when artifacts fire
 
-Chronicles and LinkedIn posts are part of the session-end protocol and
-are MUST/SHOULD gates respectively. In autonomous mode:
+Every handoff is a transition. The artifacts that fire depend on the
+level of transition:
 
-**Chronicle** (MUST — enforced by Section 9):
-- The Closer role writes the chronicle during Transition phase
-- In sequential mode: the agent switches to Closer persona at session end
-- In parallel mode: the Closer subagent is spawned at session end
-- If the session dies before Transition: the checkpointing protocol
-  (Section 10) ensures phase-state is current. The next session's
-  session-start protocol detects the missing chronicle and writes it
-  before starting new work (Step 7 in the boot sequence).
+```
+Role handoff (Shaper → PM, Builder → Reviewer, etc.)
+  MUST: checkpoint + commit artifact + update phase-state
+  This is the atomic unit. Every role switch persists state.
 
-**LinkedIn post** (MAY gate — but recommended for notable work):
+Phase transition (Inception → Elaboration, Elaboration → Construction, etc.)
+  MUST: everything above PLUS chronicle entry
+  A phase transition is a meaningful boundary — it captures what the
+  phase produced, what decisions were made, what's open. If the session
+  dies during the next phase, this chronicle is the recovery point.
+
+Iteration complete (through Transition phase)
+  MUST: everything above PLUS retro
+  MAY: LinkedIn post (if notable work shipped), release notes (if deployed)
+  This is the full wrap-up. The Closer executes here.
+```
+
+**Chronicle timing** (MUST at every phase transition):
+- Inception → Elaboration: chronicle captures the canvas, scope, risks, bet
+- Elaboration → Construction: chronicle captures ADRs, design artifacts, iteration plan
+- Construction → Transition: chronicle captures what was built, PRs, test results
+- Transition complete: chronicle captures deploy, retro, viability assessment
+
+In sequential mode: the agent writes the chronicle inline at each phase boundary.
+In parallel mode: the Orchestrator triggers the Closer subagent at each boundary.
+
+**LinkedIn post** (MAY — at iteration end only):
 - Written by the Closer during Transition
-- If the session shipped something worth sharing, draft it
+- If notable work shipped, draft it
 - If Google Doc auth isn't available, write to `docs/linkedin-drafts/`
 - Not a blocker — skip if the session produced only infrastructure work
 
-**The guarantee**: even if an autonomous session dies mid-flight, the
-checkpoint protocol ensures phase-state is current, and the next
-session's boot sequence will detect and write missing chronicles before
-starting new work. No session history is lost.
+**The guarantee**: even if a session dies mid-flight, the checkpoint
+protocol ensures phase-state is current at the last role handoff, and a
+chronicle exists for every completed phase. The next session's boot
+sequence detects gaps and fills them before starting new work.
 
 ---
 
