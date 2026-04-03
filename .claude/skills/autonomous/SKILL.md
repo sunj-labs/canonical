@@ -13,23 +13,51 @@ Invoke at any point in any repo that inherits canonical.
 ## Usage
 
 ```
-/autonomous                          → about + current readiness (default)
-/autonomous dry-run                  → full boot sequence validation, read-only
-/autonomous start [level]            → scaffold + activate (sequential by default)
-/autonomous start [level] parallel   → scaffold + activate with subagent spawning
+/autonomous              → about + current readiness (default)
+/autonomous dry-run      → full boot sequence validation, read-only
+/autonomous start        → scaffold + activate (asks for choices below)
 ```
 
-### Execution modes
+### Three choices at boot
+
+The agent asks these during Step 1. All three are independent axes.
+
+**1. Agent level** — which agents are active:
+
+| Level | Agents active | When to use |
+|-------|--------------|-------------|
+| `core` | Builder, Reviewer | Day-to-day supervised work |
+| `standard` | + Shaper, PM, Designer, Architect (6 agents) | Structured iterations with shaping + design |
+| `full` | All 10 agents including Creative Director, Deployer, Closer, Orchestrator | Full ceremony, production releases |
+
+**2. Execution mode** — how work is performed:
 
 | Mode | What happens | Burst cost | Best for |
 |------|-------------|-----------|----------|
 | **sequential** (default) | One session plays all roles in order. Persona switches, not subagent spawns. | $0 (Pro plan) | Overnight runs, budget-conscious, simpler debugging |
-| **parallel** | Orchestrator spawns subagents per role. Independent work fans out to worktrees. | Burst tokens | Throughput, multi-branch parallel work |
+| **parallel** (opt-in) | Orchestrator spawns subagents per role. Independent work fans out to worktrees. | Burst tokens | Throughput, multi-branch parallel work |
 
-Both modes produce the same outputs (commits, PRs, artifacts). Sequential
-is the default because it's cheaper and works on the Max plan with zero
-burst cost. Parallel is opt-in when you want speed and are willing to spend
-burst tokens.
+**3. Gating** — who approves handoffs between roles:
+
+| Gating | What happens | Best for |
+|--------|-------------|----------|
+| **human-gated** | Agent pauses between phases/roles for human approval | Daytime supervised sessions, learning the system |
+| **orchestrator-gated** | Agent chains through phases autonomously, no pauses | Overnight runs, trusted workflows |
+
+### Combinations
+
+Any mix works. Examples:
+
+| You want... | Configuration |
+|-------------|--------------|
+| Supervised daytime session | standard, sequential, human-gated |
+| Overnight build, zero burst | full, sequential, orchestrator-gated |
+| Fast parallel build, human review | standard, parallel, human-gated |
+| Fully autonomous, max throughput | full, parallel, orchestrator-gated |
+
+Default is **sequential + human-gated**. The agent asks if you want
+parallel (explains burst cost) and orchestrator gating (explains what
+it means to let the agent chain without pausing).
 
 **How sequential mode works:**
 - One continuous session (interactive or headless via `claude -p`)
@@ -37,8 +65,8 @@ burst tokens.
 - Between roles, it writes the handoff artifact, then switches persona
   (e.g., "I am now acting as Architect" → reads Architect agent definition
   → produces ADRs → writes handoff → "I am now acting as Builder")
-- At **standard**: pauses between phases for human approval
-- At **full**: chains through all phases without pausing
+- If human-gated: pauses between phases for approval
+- If orchestrator-gated: chains through all phases without pausing
 
 ---
 
