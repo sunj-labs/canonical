@@ -652,18 +652,27 @@ level of transition:
 ```
 Role handoff (Shaper → PM, Builder → Reviewer, etc.)
   MUST: checkpoint + commit artifact + update phase-state
+  SHOULD: LinkedIn draft — if the handoff produced a notable decision,
+    trade-off, or insight. The best posts come from thinking phases
+    (Shaper killing a bad idea, Architect choosing boring tech, Designer
+    pushing back on scope). Capture these at the handoff while the
+    reasoning is fresh, not at iteration end when it's buried.
   This is the atomic unit. Every role switch persists state.
 
 Phase transition (Inception → Elaboration, Elaboration → Construction, etc.)
   MUST: everything above PLUS chronicle entry
+  SHOULD: LinkedIn draft — phase transitions are natural post boundaries
+    ("what we learned in Inception," "why we chose this architecture")
   A phase transition is a meaningful boundary — it captures what the
   phase produced, what decisions were made, what's open. If the session
   dies during the next phase, this chronicle is the recovery point.
 
 Iteration complete (through Transition phase)
   MUST: everything above PLUS retro
-  MAY: LinkedIn post (if notable work shipped), release notes (if deployed)
-  This is the full wrap-up. The Closer executes here.
+  SHOULD: LinkedIn post (polished from drafts accumulated during handoffs)
+  MAY: release notes (if deployed)
+  This is the full wrap-up. The Closer executes here, polishing any
+  LinkedIn drafts from earlier handoffs into a final post.
 ```
 
 **Chronicle timing** (MUST at every phase transition):
@@ -675,11 +684,14 @@ Iteration complete (through Transition phase)
 In sequential mode: the agent writes the chronicle inline at each phase boundary.
 In parallel mode: the Orchestrator triggers the Closer subagent at each boundary.
 
-**LinkedIn post** (MAY — at iteration end only):
-- Written by the Closer during Transition
-- If notable work shipped, draft it
-- If Google Doc auth isn't available, write to `docs/linkedin-drafts/`
-- Not a blocker — skip if the session produced only infrastructure work
+**LinkedIn drafts** (SHOULD — at role handoffs and phase transitions):
+- Each agent, before handing off, asks: "Did this phase produce a
+  notable decision, trade-off, or insight worth sharing?"
+- If yes: write a draft to `docs/linkedin-drafts/YYYY-MM-DD-slug.md`
+- These are raw drafts — the reasoning while it's fresh
+- At iteration end, the Closer polishes drafts into a final post
+- If Google Doc auth isn't available, drafts stay in `docs/linkedin-drafts/`
+- The best posts come from Inception and Elaboration, not Construction
 
 **The guarantee**: even if a session dies mid-flight, the checkpoint
 protocol ensures phase-state is current at the last role handoff, and a

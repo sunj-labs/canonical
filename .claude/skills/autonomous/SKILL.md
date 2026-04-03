@@ -712,14 +712,18 @@ Every handoff is a transition. Artifacts fire based on the level:
 
 **Role handoff** (Shaper → PM, Builder → Reviewer, etc.):
 - MUST: checkpoint + commit artifact + update phase-state
+- SHOULD: LinkedIn draft if the handoff produced a notable decision or
+  insight. The best posts come from thinking phases, not building.
 
 **Phase transition** (Inception → Elaboration, etc.):
 - MUST: everything above + **chronicle entry** capturing what the phase
   produced, decisions made, open threads
+- SHOULD: LinkedIn draft — phase transitions are natural post boundaries
 
 **Iteration complete** (through Transition phase):
 - MUST: everything above + retro + memory update
-- MAY: LinkedIn post, release notes
+- SHOULD: LinkedIn post (polished from drafts accumulated during handoffs)
+- MAY: release notes (if deployed)
 
 Chronicles fire at **every phase transition**, not just at the end. If the
 agent completes Inception and moves to Elaboration, that's a chronicle.
