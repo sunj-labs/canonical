@@ -650,16 +650,38 @@ Orchestrator spawns subagents. Each role is a separate agent invocation.
 
 ---
 
-## Branch stacking (standard/full)
+## Pre-build gates (MUST — enforced before any Construction work)
 
-At standard and full levels, multi-step work uses stacked atomic branches
-per `standards/branch-stacking.md`:
+Before any code is written, the Orchestrator (or the agent in sequential
+mode) MUST ensure:
 
-- Agent writes a **stack manifest** before building (branches, dependencies, parallel groups)
-- **Sequential** (supervised): one branch at a time, human checkpoint between
-- **Parallel** (Cherny worktree model): `claude -w` fans out independent branches
-- Each branch is independently reviewable and revertable
-- Graceful unwind: reject any branch without tangling the rest
+1. **Spec exists** — a spec (from `/spec` or `/canvas` Stage 2+) must exist
+   and be referenced by the iteration bet. No code without a spec.
+2. **GitHub issues exist** — one per planned branch/task. No branch without
+   an issue. No work without a ticket.
+3. **Stack manifest written** — `docs/branch-stacks/YYYY-MM-DD-slug.md`
+   with branches, dependencies, parallel groups, acceptance criteria.
+4. **Branches created** — named `feature/ISSUE-NNN-stack-N-short-description`
+
+These are not suggestions. They are MUST gates per `strategy/agent-choreography.md`
+Section 9. If any is missing, the agent stops and scaffolds it before proceeding.
+
+## Branch stacking (all modes)
+
+Every autonomous mode uses stacked atomic branches per `standards/branch-stacking.md`.
+The constant: **every branch is independently revertable.**
+
+| Mode + Gating | Branching | Rollback |
+|---------------|-----------|----------|
+| Sequential + human-gated | One branch at a time. PR reviewed before next starts. | Drop any PR. Zero tangling. |
+| Sequential + orchestrator-gated | One branch at a time, chained. PRs opened but not merged until human reviews. | Reject any PR. Dependents discarded per manifest. |
+| Parallel + human-gated | Independent branches in worktrees. Human reviews each. | Drop any PR. Independent branches survive. |
+| Parallel + orchestrator-gated | Worktree branches. Agent merges on Reviewer approval. | Revert any merged PR. Independent unaffected. |
+
+**Rollback at any point**: reject a PR (dependents discarded, independents survive),
+reject the entire stack (main untouched), or revert a merged PR (git revert the squash).
+
+See `strategy/agent-choreography.md` Section 12 for full branching protocol.
 
 ---
 

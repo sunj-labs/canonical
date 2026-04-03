@@ -485,6 +485,8 @@ rationale. MAY gates are best practice.
 
 | Gate | When | What | Who enforces |
 |------|------|------|-------------|
+| Spec before code | Before any Construction work begins | A spec (from `/spec` or `/canvas` Stage 2+) must exist and be referenced by the iteration bet. No code without a spec. | Orchestrator |
+| GitHub issue before branch | Before creating any branch | Every branch ties to a GitHub issue. No branch without an issue. No work without a ticket. | Orchestrator, Builder |
 | `/verify` after each task | After every build task, before commit | Run verification appropriate to change type | Builder |
 | Tests pass | Before every commit of source code | New exported function = new test. No "I'll add tests later." | Builder, Reviewer |
 | `/temperance` before non-trivial work | Before any implementation that touches >1 file or modifies behavior | Pause: simplest approach? brute-forcing? blast radius? | Builder |
@@ -578,3 +580,58 @@ These are codified in the agent definitions at `~/.claude/agents/*.md`.
 | Coordination | Cherny (Anthropic, worktrees), Wu (Anthropic, process), Ordax (.claude infrastructure) |
 
 Source document: `~/Documents/AI Exchange/sdlc-luminaries.docx`
+
+---
+
+## 12. Branching Strategy by Autonomous Mode
+
+Every autonomous mode uses stacked atomic branches (see `standards/branch-stacking.md`).
+The branching behavior varies by execution mode and gating. The constant:
+**every branch is independently revertable. You can reject any PR without
+tangling the rest.**
+
+### Branching rules by mode
+
+| Mode + Gating | Branching behavior | Rollback cost |
+|---------------|-------------------|--------------|
+| Sequential + human-gated | One branch at a time. Human reviews PR before next branch starts. Each branch merges to main before the next begins. | Drop any PR. Zero tangling. |
+| Sequential + orchestrator-gated | One branch at a time. Agent chains through without pausing. PRs opened but not merged until human reviews post-session. | Reject any PR from the stack. Dependents discarded per manifest. |
+| Parallel + human-gated | Independent branches in worktrees simultaneously. Human reviews each PR. | Drop any PR. Independent branches survive. |
+| Parallel + orchestrator-gated | Independent branches in worktrees. Agent merges on Reviewer approval. Dependent branches queue. | Revert any merged PR. Independent branches unaffected. |
+
+### What the Orchestrator does
+
+Before any Construction work:
+
+1. **Create GitHub issues** — one per planned branch. This is a MUST gate.
+   No branch without an issue. No work without a ticket.
+2. **Write the stack manifest** — `docs/branch-stacks/YYYY-MM-DD-slug.md`
+   with branches, dependencies, parallel groups, acceptance criteria.
+3. **Create branches** — named `feature/ISSUE-NNN-stack-N-short-description`
+4. **Assign to execution mode**:
+   - Sequential: Builder works one branch at a time
+   - Parallel: independent branches fan out to worktrees
+
+### Rollback protocol
+
+At any point, the operator can:
+
+- **Reject a PR** → branch is discarded. Dependents (per manifest) also discarded.
+  Independent branches survive.
+- **Reject the entire stack** → all branches discarded. Main is untouched
+  (nothing merges until approved).
+- **Revert a merged PR** → `git revert` the squash commit on main.
+  Independent branches are unaffected because they based off main before
+  the merge.
+
+The stack manifest's dependency graph makes rollback mechanical:
+look up what depends on the rejected branch, discard those too, keep
+everything else.
+
+### The non-negotiable
+
+In ALL modes: **main is always deployable.** Nothing merges to main without:
+1. `/verify` passing on the branch
+2. Tests passing on the branch
+3. PR opened (even if Reviewer is agent-gated, the PR exists for audit)
+4. Spec and issue exist (MUST gates from Section 9)
