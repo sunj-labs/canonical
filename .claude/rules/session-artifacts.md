@@ -6,12 +6,24 @@ description: Session artifacts — chronicle + LinkedIn drafts at every phase tr
 At ALL process levels (core, standard, full), these artifacts are mandatory.
 They fire regardless of whether /autonomous is active.
 
+## Backfill before current (MUST — applies to all artifacts below)
+
+Before writing ANY session artifact (chronicle, LinkedIn, release notes):
+1. Check when the last entry was written
+2. Check how many sessions/commits/days are missing since then
+3. If there are gaps: backfill them FIRST, in chronological order (oldest first)
+4. THEN write the current session's artifact
+
+This prevents out-of-order content in append-only destinations (Google Docs)
+and ensures no session is silently skipped.
+
 ## Chronicle (MUST — every phase transition + session end)
 
 Before ending any session or completing any phase transition:
 1. Check: when was the last chronicle entry? How many commits since?
-2. If ≥3 commits since last entry: write the chronicle NOW
-3. Chronicle goes in the repo's existing chronicle directory:
+2. If ≥3 commits since last entry: backfill the missing chronicle(s) FIRST
+3. Then write the current session's chronicle
+4. Chronicle goes in the repo's existing chronicle directory:
    - Check docs/chronicle/ first
    - Then docs/design/chronicle/
    - Then chronicle/
@@ -25,9 +37,11 @@ At every role handoff, phase transition, or session end, ask:
 or insight worth sharing?"
 
 If yes:
-1. Create docs/linkedin-drafts/ if it doesn't exist
-2. Write draft to docs/linkedin-drafts/YYYY-MM-DD.md
-3. Push to Google Doc if script exists:
+1. Check for gaps: when was the last LinkedIn draft? Are there missed
+   sessions that owed drafts? Backfill those FIRST, oldest to newest.
+2. Create docs/linkedin-drafts/ if it doesn't exist
+3. Write draft to docs/linkedin-drafts/YYYY-MM-DD.md
+4. Push to Google Doc — push in chronological order (oldest first):
    cd ~/src/sunj-labs/poa && GDOC_LINKEDIN_ID="1b1Gs8CDfOVF5D0ZaIswMWfW9JqQEgx0Zk409I9YfY7I" npx tsx scripts/push-to-gdoc.ts --file [draft path]
 4. Verify both the local file and Google Doc push succeeded
 
