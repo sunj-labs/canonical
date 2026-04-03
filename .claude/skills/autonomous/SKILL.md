@@ -13,10 +13,32 @@ Invoke at any point in any repo that inherits canonical.
 ## Usage
 
 ```
-/autonomous              → about + current readiness (default)
-/autonomous dry-run      → full boot sequence validation, read-only
-/autonomous start        → scaffold missing artifacts + activate session
+/autonomous                          → about + current readiness (default)
+/autonomous dry-run                  → full boot sequence validation, read-only
+/autonomous start [level]            → scaffold + activate (sequential by default)
+/autonomous start [level] parallel   → scaffold + activate with subagent spawning
 ```
+
+### Execution modes
+
+| Mode | What happens | Burst cost | Best for |
+|------|-------------|-----------|----------|
+| **sequential** (default) | One session plays all roles in order. Persona switches, not subagent spawns. | $0 (Pro plan) | Overnight runs, budget-conscious, simpler debugging |
+| **parallel** | Orchestrator spawns subagents per role. Independent work fans out to worktrees. | Burst tokens | Throughput, multi-branch parallel work |
+
+Both modes produce the same outputs (commits, PRs, artifacts). Sequential
+is the default because it's cheaper and works on the Max plan with zero
+burst cost. Parallel is opt-in when you want speed and are willing to spend
+burst tokens.
+
+**How sequential mode works:**
+- One continuous session (interactive or headless via `claude -p`)
+- The agent reads the choreography and plays each role in order
+- Between roles, it writes the handoff artifact, then switches persona
+  (e.g., "I am now acting as Architect" → reads Architect agent definition
+  → produces ADRs → writes handoff → "I am now acting as Builder")
+- At **standard**: pauses between phases for human approval
+- At **full**: chains through all phases without pausing
 
 ---
 
@@ -190,28 +212,36 @@ This is where autonomous work begins.
   └─ Step 9: ACTIVATE
       → Read the iteration bet's phase field
       → Select choreography from agent-choreography.md Section 3:
-        - Inception → Shaper first (opus), then PM, then Creative Director
-        - Elaboration → Architect + Designer (parallel if independent), then PM
+        - Inception → Shaper first, then PM, then Creative Director
+        - Elaboration → Architect + Designer, then PM
         - Construction → Builder on stacked branches, Reviewer per PR
-        - Transition → Deployer, then Creative Director spot-check, then Closer
-      → Activation mechanics (how agents are invoked):
-        - STANDARD level: spawn subagents via the Agent tool.
-          The current session becomes the Orchestrator. It spawns each
-          role agent as a subagent (e.g., Agent tool with
-          subagent_type=Shaper). Human approves each handoff.
-        - FULL level: same mechanics, but the Orchestrator chains
-          through handoffs autonomously. Human reviews PRs, not
-          handoffs.
-        - If the iteration bet calls for multi-branch work:
-          read standards/branch-stacking.md. Write a stack manifest.
-          Sequential branches → one Builder subagent at a time.
-          Parallel branches → multiple worktree agents (claude -w).
-      → First agent receives:
+        - Transition → Deployer, Creative Director spot-check, Closer
+      → Execution mode determines HOW:
+        SEQUENTIAL (default):
+          One session plays all roles in order. Between roles:
+          1. Write the handoff artifact to its known path
+          2. Switch persona: read the next agent's definition from
+             ~/.claude/agents/{role}.md
+          3. State: "Now acting as [Role]. Reading [artifact]."
+          4. Execute that role's choreography steps
+          5. Repeat until phase complete
+          At standard: pause between phases for human approval
+          At full: chain through all phases without pausing
+          Burst cost: $0 (all Pro plan usage)
+        PARALLEL (opt-in with 'parallel' flag):
+          Orchestrator spawns subagents via the Agent tool.
+          Each role agent is a subagent with subagent_type matching
+          the role (e.g., Shaper, Builder, Architect).
+          At standard: human approves each handoff
+          At full: Orchestrator chains autonomously
+          Multi-branch work: worktree agents (claude -w) for
+          independent branches per standards/branch-stacking.md
+          Burst cost: tokens per subagent spawn
+      → First role receives:
         1. The iteration bet (scope, phase, appetite)
         2. The relevant substrate artifacts (canvas, spec, design docs)
         3. Any screenshots or intent provided by the operator
-        4. The instruction: "Produce [artifact type] at [path]. Signal
-           completion when done."
+        4. The instruction: "Produce [artifact type] at [path]."
 ```
 
 ### Step-by-step detail
@@ -476,9 +506,32 @@ Output the boot report. Then:
 On confirmation, read the iteration bet's `phase:` field and activate the
 corresponding choreography from `strategy/agent-choreography.md` Section 3.
 
-**How agents are invoked:**
+**Sequential mode (default):**
 
-At **standard** level:
+One session plays all roles. No subagent spawning. Zero burst cost.
+
+The agent walks through the choreography in order. Between each role:
+1. Write the handoff artifact to its known path (per Section 4 of choreography)
+2. Read the next agent's definition from `~/.claude/agents/{role}.md`
+3. State: "Now acting as [Role]. Reading [handoff artifact]."
+4. Execute that role's steps from the choreography
+5. Write output artifact, then switch to next role
+
+At **standard** (sequential): pauses between phases for human approval.
+"Phase [X] complete. Artifacts produced: [list]. Ready to begin [Y]. Confirm?"
+
+At **full** (sequential): chains through all phases without pausing.
+Human reviews the output (PRs, artifacts) after the session completes.
+Ideal for overnight runs — start it, go to sleep, review PRs in the morning.
+
+For multi-branch Construction work in sequential mode: the agent writes a
+stack manifest, then builds one branch at a time (no worktree parallelism).
+
+**Parallel mode (opt-in with `parallel` flag):**
+
+Orchestrator spawns subagents. Each role is a separate agent invocation.
+
+At **standard** (parallel):
 - The current session becomes the Orchestrator
 - Each role agent is spawned as a subagent (via the Agent tool with the
   matching `subagent_type`, e.g., `Shaper`, `Builder`, `Architect`)
@@ -487,16 +540,17 @@ At **standard** level:
   2. Relevant substrate artifacts (canvas, spec, design docs, screenshots)
   3. A clear instruction: "Produce [artifact] at [path]. Signal when done."
 - Human approves each handoff between agents
-- For multi-branch Construction work: write a stack manifest per
-  `standards/branch-stacking.md`, then execute sequentially or in parallel
+- Multi-branch work: worktree agents (`claude -w`) for independent branches
 
-At **full** level:
+At **full** (parallel):
 - Same mechanics, but the Orchestrator chains through handoffs autonomously
 - Human reviews PRs and phase gate results, not individual handoffs
-- Parallel worktree agents (`claude -w`) for independent branches
+- Parallel worktree agents for independent branches
 - Orchestrator manages budget, appetite, and conflict detection
 
-At **core** level:
+Burst cost: each subagent spawn consumes API burst tokens.
+
+**At core level** (either mode):
 - Report complete. Human drives from here.
 - Skills and rules are active. Use `/temperance` before building, `/verify` after.
 - The iteration bet and phase-state are reference artifacts for the human.
