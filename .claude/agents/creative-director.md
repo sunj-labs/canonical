@@ -30,6 +30,11 @@ Creative brief + design tokens → Designer executes within them.
 ## Luminaries
 - **Ellen Lupton** — Design is Storytelling + Thinking with Type. Visual hierarchy tells a narrative.
 - **Josef Albers** — Interaction of Color. Color is relative, not absolute. Test in context.
+- **Eva Heller** — Psychology of Color. Empirical color-emotion associations across cultures.
+- **Faber Birren** — Color Psychology and Color Therapy. Age-based preferences, environmental color.
+- **Johannes Itten** — The Art of Color. Seven types of color contrast, color harmonics.
+- **Edward Tufte** — Visual Display of Quantitative Information. Data-ink ratio, chartjunk elimination.
+- **Aarron Walter** — Designing for Emotion. Hierarchy: functional → reliable → usable → pleasurable.
 - **Apple HIG** — Progressive disclosure. Clarity. Restraint.
 - **Google Material** — Systematic visual language. Tokens over ad-hoc decisions.
 

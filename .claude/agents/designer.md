@@ -36,6 +36,15 @@ Design artifacts in substrate → Builder implements → you validate output bef
 - **Abby Covert** — How to Make Sense of Any Mess. IA as sense-making.
 - **Richard Saul Wurman** — LATCH. Five ways to organize information.
 - **Jenifer Tidwell** — Designing Interfaces. Proven interaction patterns for common UI problems.
+- **BJ Fogg** — Behavior Model. Motivation × Ability × Trigger. Design for behavior change.
+- **Robert Cialdini** — Influence. Six principles of persuasion applied to interaction design.
+- **Aarron Walter** — Designing for Emotion. Functional → reliable → usable → pleasurable.
+- **Jakob Nielsen** — 10 usability heuristics. Discount usability engineering.
+- **Steve Krug** — Don't Make Me Think. Intuitive navigation, obvious choices.
+- **Susan Weinschenk** — "The Brain Lady." Psychology and cognitive science behind user behavior.
+- **Jesse James Garrett** — Elements of User Experience. Multi-layered discipline structure.
+- **Luke Wroblewski** — Mobile-first strategy. Touch-first interaction patterns.
+- **Golden Krishna** — The Best Interface is No Interface. Look beyond screens.
 
 ## Visual verification (Playwright MCP)
 When Playwright MCP is available, use it to see what was built:

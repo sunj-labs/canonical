@@ -45,26 +45,51 @@ Can also be invoked standalone at any time.
 - Risk register (what UX/tech risks exist)
 - Iteration bet (what value/lovability we're proving)
 
-### 2. Propose 2-3 luminary variants
+### 2. Operator picks up to 3 luminaries
 
-Based on the scope, propose variants driven by different aesthetic/UX
-philosophies. Present to the operator:
+Use AskUserQuestion to let the operator pick which luminary perspectives
+to prototype against. Present the full menu organized by discipline:
 
-> **Prototype Sprint — proposed variants:**
+> **Pick up to 3 luminaries for your prototype variants.**
+> Each variant will be built through that thinker's dominant lens.
 >
-> | Variant | Primary luminary | Aesthetic direction |
-> |---------|-----------------|-------------------|
-> | A | Don Norman (Design of Everyday Things) | Affordance-first: minimal chrome, obvious actions, every interaction self-explaining |
-> | B | Ellen Lupton (Design is Storytelling) | Narrative hierarchy: the page tells a story, visual weight guides the eye through a sequence |
-> | C | Sophia Prater (Object-Oriented UX) | Entity-derived: navigation mirrors the domain model, screens derive from objects not features |
+> **UX / Interaction:**
+> - Don Norman — affordance-first, minimal chrome, obvious actions
+> - Jakob Nielsen — 10 usability heuristics, discount usability
+> - Alan Cooper — goal-directed, start from user goals, work backward
+> - Steve Krug — "Don't Make Me Think", intuitive navigation
+> - Sophia Prater — entity-derived, navigation mirrors the domain model
+> - Jenifer Tidwell — proven interaction patterns for common UI problems
+> - Luke Wroblewski — mobile-first, touch-first interaction
+> - Golden Krishna — no-interface thinking, beyond screens
 >
-> Adjust, add, remove, or confirm.
+> **Visual / Typography / Color:**
+> - Ellen Lupton — storytelling hierarchy, the page tells a narrative
+> - Josef Albers — color as context, relative not absolute, test combinations
+> - Eva Heller — color psychology, emotional associations across cultures
+> - Johannes Itten — seven types of color contrast, color harmonics
+> - Edward Tufte — data-ink ratio, maximum information, minimum decoration
+> - Apple HIG — progressive disclosure, clarity, restraint
+> - Google Material — systematic visual language, tokens over ad-hoc
+>
+> **Information Architecture:**
+> - Peter Morville — how content is organized, labeled, navigated
+> - Abby Covert — sense-making, structure from complexity
+> - Richard Saul Wurman — LATCH (Location, Alphabet, Time, Category, Hierarchy)
+> - Jesse James Garrett — multi-layered UX structure (strategy → surface)
+>
+> **Psychology / Persuasion / Emotion:**
+> - BJ Fogg — behavior design, motivation × ability × trigger
+> - Robert Cialdini — persuasion principles (social proof, scarcity, authority)
+> - Aarron Walter — emotional design hierarchy (functional → reliable → usable → pleasurable)
+> - Susan Weinschenk — "The Brain Lady", cognitive science behind user behavior
 
-The luminary choice depends on the scope:
-- **Data-heavy tools** → Norman (affordance) vs Prater (entity-derived) vs Wurman (LATCH)
-- **Storytelling/narrative** → Lupton (storytelling) vs Apple HIG (restraint) vs Cooper (goal-directed)
-- **Dashboard/overview** → Tufte (data-ink ratio) vs Morville (IA) vs Google Material (systematic)
-- **Forms/input** → Norman (affordance) vs Tidwell (interaction patterns) vs Cooper (goal-directed)
+If the operator doesn't pick, propose 3 based on the scope:
+- **Data-heavy tools** → Norman, Prater, Tufte
+- **Storytelling/narrative** → Lupton, Apple HIG, Cooper
+- **Dashboard/overview** → Tufte, Morville, Material
+- **Forms/input** → Norman, Tidwell, Cooper
+- **Emotional/consumer** → Walter, Fogg, Lupton
 
 ### 3. Build each variant
 

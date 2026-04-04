@@ -618,8 +618,8 @@ These are codified in the agent definitions at `~/.claude/agents/*.md`.
 | Business Modeling / Shaping | Christensen (JTBD), Amazon (PR/FAQ), Ohno (Five Whys), Wu (Anthropic) |
 | Product Strategy | Christensen (JTBD), Kalbach (JTBD Playbook), DORA (metrics), Lean Canvas |
 | Architecture | Brown (C4), Nygard (ADRs), Martin (SOLID), Evans (DDD), Larman (UML) |
-| UX / Design | Annett/Duncan (HTA), Prater (OOUX), Cooper (Goal-Directed), Norman, Morville/Rosenfeld (IA), Covert, Wurman (LATCH), Cohn (User Stories), Tidwell (Interaction Patterns) |
-| Creative Direction | Lupton (Storytelling, Typography), Albers (Color), Apple HIG, Google Material |
+| UX / Design | Norman, Nielsen (Heuristics), Cooper (Goal-Directed), Prater (OOUX), Krug (Don't Make Me Think), Annett/Duncan (HTA), Morville/Rosenfeld (IA), Covert, Wurman (LATCH), Tidwell (Interaction Patterns), Garrett (Elements of UX), Wroblewski (Mobile-first), Weinschenk (Psychology), Krishna (No Interface), Fogg (Behavior Model), Cialdini (Persuasion), Walter (Emotional Design) |
+| Creative Direction | Lupton (Storytelling, Typography), Albers (Color Theory), Heller (Color Psychology), Birren (Color Therapy), Itten (Color Harmonics), Tufte (Data Visualization), Walter (Emotional Design), Apple HIG, Google Material |
 | Implementation | GoF (Design Patterns), Fowler (Enterprise Patterns), Martin (SOLID), Beck/Cunningham (TDD), Conventional Commits |
 | Testing / Review | Martin (SOLID), Fowler (Patterns), Beck (TDD), Brown (C4 boundaries) |
 | Problem Solving | Ohno (Five Whys), Kepner-Tregoe (Is/Is Not) |
