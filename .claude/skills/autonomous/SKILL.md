@@ -307,6 +307,14 @@ This is where autonomous work begins.
 2. **Present prompts VERBATIM from this document.**
    The parenthetical explanations are carefully written for the operator.
    Do NOT summarize, compress, or rephrase them. Copy them exactly.
+   If you are tempted to summarize a prompt into a one-liner, STOP.
+   The full explanation exists because operators need context to give
+   good answers. A compressed prompt produces compressed answers.
+   
+   Use the **AskUserQuestion tool** for structured choices (level,
+   execution mode, gating) instead of free-text. For open-ended
+   questions (scope, risk, value), present the full prompt with
+   examples and let the operator type freely.
 
 3. **WAIT FOR CONFIRMATION between steps.**
    After scaffolding each artifact, show what was created and ask
