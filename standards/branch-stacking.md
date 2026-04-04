@@ -160,6 +160,55 @@ This is why independence is the default and dependencies are the exception.
 
 ---
 
+## Squash merge + rebase cascade
+
+When merging stacked PRs with squash merge (the default), each merge
+rewrites history on main. This invalidates downstream PRs because their
+base branch no longer matches.
+
+### The protocol
+
+After squash-merging PR N in a stack:
+
+1. **Pull updated main**: `git checkout main && git pull`
+2. **Rebase the next branch**: `git checkout feature/next && git rebase main`
+3. **Force push with lease**: `git push --force-with-lease`
+   (safe force push — fails if someone else pushed to the branch)
+4. **If GitHub auto-closed downstream PRs** (this happens when the base
+   branch is deleted): merge locally instead:
+   ```bash
+   git checkout main
+   git merge --squash feature/next
+   git commit -m "feat: description"
+   ```
+5. **Repeat** for remaining branches in stack order
+
+### Why this happens
+
+Squash merge creates a single new commit on main that replaces all
+commits from the branch. The next branch's base commits no longer exist
+on main — they were squashed into one. GitHub sees a conflict because
+the branch history diverged from main.
+
+### Auto-save checkpoint conflicts
+
+If the auto-save launchd timer committed checkpoint files (e.g.,
+`.test-baseline`) on feature branches during construction, these
+checkpoints will conflict during rebase. Use `git rebase --skip` to
+drop the checkpoint commits — they're not part of the real work.
+
+The auto-save timer should be paused during autonomous sessions
+(SESSION_LOCK check, see #62).
+
+### Alternative: regular merge commits
+
+Using regular merge commits (no squash) preserves branch relationships
+and avoids the rebase cascade. Trade-off: messier main history with
+merge commits. Squash is still preferred for a clean main, but the
+rebase step is the cost.
+
+---
+
 ## Naming convention
 
 ```
