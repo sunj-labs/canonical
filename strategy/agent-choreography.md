@@ -91,6 +91,7 @@ The Orchestrator binds these at session init. Agents do not self-assign skills.
 | `/chronicle` | Closer | Any agent at session end | Any |
 | `/retro` | Closer | — | Transition |
 | `/linkedin` | Closer | — | Transition |
+| `/prototype-sprint` | Designer | Orchestrator (proposes variants) | Elaboration (step 0) |
 | `/feynman` | Any | — | Any (explanation) |
 | `/promote` | Any | — | Any (canonical evolution) |
 
@@ -167,6 +168,24 @@ Orchestrator
 
 ```
 Orchestrator
+
+  Step 0 (optional): PROTOTYPE SPRINT
+  If the iteration involves UI work, ask the operator:
+    "Run a prototype sprint? 2-3 visual variants with different
+     aesthetic directions. Takes ~10 turns. You pick the direction
+     before we invest in full Elaboration artifacts."
+
+  If yes → run /prototype-sprint:
+    1. Propose 2-3 luminary-driven variants (Norman vs Lupton vs Prater, etc.)
+    2. Operator confirms or adjusts the variants
+    3. Designer builds each as static HTML + Tailwind + stubbed data
+    4. Screenshots taken via Playwright MCP (if available)
+    5. Operator views locally, selects a direction
+    6. Selected luminary becomes the iteration bet's primary_luminary
+    7. Continue to Elaboration step 1 with the chosen direction
+
+  If no → skip directly to Architect/Designer activation below.
+
   → activates Architect (sonnet)
     Architect:
       1. Build C4 Context + Container diagrams

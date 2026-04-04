@@ -297,7 +297,7 @@ This is where autonomous work begins.
       → Read the iteration bet's phase field
       → Select choreography from agent-choreography.md Section 3:
         - Inception → Shaper first, then PM, then Creative Director
-        - Elaboration → Architect + Designer, then PM
+        - Elaboration → (optional) Prototype Sprint first, then Architect + Designer, then PM
         - Construction → Builder on stacked branches, Reviewer per PR
         - Transition → Deployer, Creative Director spot-check, Closer
       → Execution mode determines HOW:
