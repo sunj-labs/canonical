@@ -114,6 +114,16 @@ This means a single repo can have:
 Each iteration bet declares its phase. The Orchestrator runs the matching
 choreography below.
 
+If the iteration bet includes a `primary_luminary:` field, the Orchestrator
+surfaces it before activating any agent:
+
+> "Primary luminary for this iteration: [Name]. Emphasizing: [key principle]."
+
+Each agent reads this and states at task start how the primary luminary
+influences their approach. At handoff, the agent notes which decisions were
+shaped by the primary lens. Other luminaries still inform — the primary is
+the tiebreaker when approaches conflict.
+
 ### Inception — "Is this worth building?"
 
 ```

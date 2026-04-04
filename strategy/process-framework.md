@@ -43,6 +43,13 @@ The Orchestrator requests bet sizes from the operator before scheduling. Default
 
 **Phase**: Elaboration / Construction / Transition
 
+**Primary luminary** (optional): [Name] — [1-sentence rationale]
+Example: "Don Norman (Design of Everyday Things) — this iteration
+prioritizes making the right action obvious over aesthetic sophistication"
+When set, agents weight this thinker's principles more heavily in
+judgment calls. Other luminaries still inform — the primary is a
+tiebreaker when approaches conflict, not an exclusion.
+
 **Scope**:
 - [Feature / ADR / spec section being built — the work definition]
 
@@ -506,6 +513,7 @@ budget:
 Retiring: R-001 [one line]
 Proving: [one line — what business signal]
 Scope: [features / ADRs / spec sections]
+Primary luminary: [Name] (optional — dominant lens for this iteration)
 Cost ceiling: $X
 Turn limit: N
 ```

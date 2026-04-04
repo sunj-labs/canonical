@@ -247,6 +247,7 @@ This is where autonomous work begins.
   │   → Prompt for all fields (format depends on level):
   │     - What are we building? (scope)
   │     - What phase is THIS WORK in? (can differ from project phase)
+  │     - Primary luminary? (optional — whose POV dominates)
   │     - What risk are we retiring?
   │     - What value are we proving?
   │     - Lovability signal? (standard/full only)
@@ -536,6 +537,22 @@ For **standard/full** (formal format), prompt with explanations:
 > - Transition = built, needs deployment/stabilization/handoff
 > Example: "Inception — CRM is a new module, nothing exists yet.")
 >
+> **Primary luminary?** (optional)
+> (If you want one thinker's perspective to dominate this iteration's
+> judgment calls, name them here. The agent will weight their principles
+> more heavily — other luminaries still inform, but the primary is the
+> tiebreaker when approaches conflict.
+>
+> Examples by discipline:
+> - **UX**: Don Norman (affordance), Sophia Prater (entity-derived), Alan Cooper (goal-directed)
+> - **Visual**: Ellen Lupton (storytelling), Josef Albers (color theory), Apple HIG (restraint)
+> - **Architecture**: Eric Evans (DDD), Simon Brown (C4), Robert Martin (SOLID)
+> - **Product**: Clayton Christensen (JTBD), Amazon PR/FAQ, Lean Canvas
+> - **Engineering**: Kent Beck (TDD), Martin Fowler (patterns), Gang of Four
+>
+> Skip this to use all luminaries equally. Most useful during Elaboration
+> or when producing prototype variants with different aesthetic directions.)
+>
 > **What risk are we retiring?**
 > (The single biggest thing that could kill this if we don't address it
 > this iteration. Format: one sentence starting with "Can we..." or
@@ -589,6 +606,7 @@ Write to `docs/iteration-bets/YYYY-MM-DD-slug.md`:
 
 **Phase**: [from answer — this drives choreography]
 **Subsystem**: [which part of the app]
+**Primary luminary**: [from answer, or "none — all luminaries equal"]
 
 **Scope**:
 - [what's being built]
