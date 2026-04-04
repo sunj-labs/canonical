@@ -85,6 +85,16 @@ this repo is right now.
 | `standard` | + Shaper, PM, Designer, Architect (6) | Formal bets. Phase gates. Shaping + design. |
 | `full` | + Creative Director, Deployer, Closer, Orchestrator (10) | Full ceremony. Production releases. |
 
+**Cost by level** (sequential mode — parallel adds burst tokens):
+
+| Level | Sequential cost | What you're paying for |
+|-------|----------------|----------------------|
+| core | $0 | Max plan covers everything |
+| standard | $0 | Same — persona switches, no subagents |
+| full | $0 | Same — more roles but still one session |
+
+Parallel mode adds burst cost per subagent spawn. Sequential is default and free on Max plan.
+
 **Execution mode** — how work runs (default: sequential):
 
 | Mode | Burst cost | How it works |
@@ -112,13 +122,22 @@ Scan the repo for the key artifacts and report status:
 | Phase state (docs/phase-state.md) | ✅ / ❌ | ... |
 | Iteration bet | ✅ / ❌ | ... |
 | Risk register (docs/risk-register.md) | ✅ / ❌ / ⚠️ Disabled | ... |
-| Skills | ✅ N skills found | .claude/skills/ |
+| Deploy targets | ✅ Configured / ⚠️ Local only | ... |
+| Skills | ✅ N local + M inherited | .claude/skills/ |
 | Session lock | ✅ Clear / ⚠️ Active | ... |
-| Chronicle (current) | ✅ / ⚠️ Stale (N commits behind) | ... |
+| Chronicle (current) | ✅ / ⚠️ Stale — resolved during boot | ... |
+| Architect review | ✅ / ⚠️ Overdue — resolved during boot | ... |
 
 Current level: core
 Ready for: core ✅ | standard ⚠️ (needs: phase-state, iteration bet, risk register) | full ❌
 ```
+
+**What NOT to surface in readiness** (these create noise, not signal):
+- Untracked skill symlinks from canonical-sync — these are expected, not a problem
+- Stale dev processes on ports — only relevant if they'll conflict with the
+  current session. If you surface them, make it actionable: "Kill PIDs X, Y, Z?
+  They may conflict with dev server." Don't just list PIDs with no guidance.
+- Auto-save checkpoint files (.test-baseline, etc.) — transient, not readiness-relevant
 
 ### 3. Show next steps
 
@@ -394,6 +413,20 @@ Read `substrate.config.md`. Three cases:
   - `risk-register:` → `yes` if standard/full
   - Budget: confirm iteration_ceiling (ALWAYS ASK, never assume)
 
+When confirming deploy targets, ask:
+
+> **Deployment targets?**
+> (Where can this project be deployed? This controls what the Deployer
+> agent is allowed to do during Transition.
+> - **local only** (default) — build, test, verify locally. No remote deploy.
+> - **staging** — provide the staging URL. Deployer can push to staging and
+>   run /test-e2e. Human approval still needed for prod.
+> - **production** — provide the prod URL. Deployer can prepare the release
+>   but **production deploy ALWAYS requires human approval**, even in
+>   orchestrator-gated mode. This is a hard guardrail — no exceptions.
+>
+> If you're not sure, choose local only. You can add staging/prod later.)
+
 When confirming budget, explain the distinction:
 > Your Max plan covers all interactive Claude Code usage. The budget here
 > governs the **API burst pool** — a separate $25 pool that's consumed when
@@ -440,6 +473,19 @@ budget:
   session_ceiling: $20         # max API burst per session (leave $5 buffer)
   iteration_ceiling: [ASK]     # max burst per iteration (never assume)
   warning_threshold: 75%       # Orchestrator surfaces status at this %
+
+## Deployment targets
+#
+# Where can this project be deployed? Agents check this before any
+# deploy action. If not configured, agents stay local-only.
+#
+# CRITICAL: Production deploy ALWAYS requires human approval,
+# even in orchestrator-gated mode. This is a hard guardrail.
+#
+deploy_targets:
+  local: true                  # always available — build, test, verify
+  staging: false               # set to URL when configured (e.g., https://staging.example.com)
+  prod: false                  # set to URL when configured — NEVER auto-deployed
 ```
 
 #### Step 3: Scaffold — phase state

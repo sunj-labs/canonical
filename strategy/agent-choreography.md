@@ -262,7 +262,16 @@ Orchestrator reads the iteration plan. Each iteration:
 Orchestrator
   → activates Deployer (haiku)
     Deployer:
-      1. /deploy-prod — execute release process
+      0. CHECK DEPLOY TARGETS in substrate.config.md FIRST:
+         - local only (default) → build, test, verify locally. STOP here.
+           Skip steps 1-2. Write release notes + runbook only.
+         - staging configured → deploy to staging, run /test-e2e there.
+           Report results. Do NOT touch prod without human approval.
+         - prod configured → prepare release. STOP and ask human.
+           PRODUCTION DEPLOY ALWAYS REQUIRES HUMAN APPROVAL.
+           This is a hard guardrail. No exceptions. Not even in
+           orchestrator-gated mode.
+      1. /deploy-prod — execute release process (per deploy targets)
       2. /test-e2e — post-deploy verification
       3. /release-notes — for user-facing changes
       4. Write runbook in substrate

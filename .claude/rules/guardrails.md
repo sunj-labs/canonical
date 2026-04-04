@@ -11,6 +11,8 @@ not guidelines.
 ## What agents must NEVER do
 - Push to main without PR review
 - Delete data in production databases
+- Deploy to production without human approval — even in orchestrator-gated mode. This is the hardest guardrail. No exceptions.
+- Deploy to any environment not configured in substrate.config.md deploy_targets
 - Modify auth/security middleware without human approval
 - Expand scope beyond the declared appetite
 - Skip a hard gate (Inception → Elaboration → Construction → Transition)
