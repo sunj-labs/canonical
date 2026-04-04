@@ -113,10 +113,61 @@ Ran `/autonomous start standard` in POA with parallel + orchestrator-gated:
 5. **Three-source canonical evolution (#48)** — agent-proposed improvements need a reflection reflex at checkpoints
 6. **--dangerously-skip-permissions (#51)** — must surface in /autonomous start for orchestrator-gated
 
+## Session 2: Reliability iteration (evening 04-03)
+
+Executed all 7 fixes from the iteration bet in canonical:
+- **#58**: Reviewer reads PR diffs via `gh pr diff`, not working directory
+- **#62**: Auto-save pauses when SESSION_LOCK exists
+- **#61**: Stacked PR squash merge + rebase cascade protocol documented
+- **#64**: `prisma generate` added as MUST gate after schema merges
+- **#63**: Tailwind v4 symlink exclusion documented in frontend-stack standard
+- **#50**: Prompt fidelity strengthened — anti-compression directive
+- **#65**: Data management standard created (snapshot, migrate, seed, verify with data)
+
+Additional issues filed during POA observation:
+- **#51**: --dangerously-skip-permissions for orchestrator-gated
+- **#52**: /temperance implied core-only
+- **#53**: Recommend appetite from configuration
+- **#54**: Duplicate ceiling ask
+- **#55**: Chronicle path + LinkedIn drafts
+- **#56**: Per-repo Google Doc ID
+- **#57**: Backfill-before-current rule
+- **#59**: Cost tracking per phase
+- **#60**: Deploy environment config
+- **#61-65**: As above
+
+## POA results (observed from canonical session)
+
+The autonomous CRM build completed:
+- Inception → Elaboration → Construction in one session
+- 5 feature branches, ~103 tests, /outreach page with nav badge
+- Log Interaction form on deal detail pages
+- Needs Attention queue with seeded data (6 deals, time-spread interactions)
+- Reviewer re-run against actual PR diffs after initial spec-only review
+- Agent generated 3 new issues for next iteration (#285, #286, #287)
+- Agent left substrate artifacts uncommitted — checkpointing gap
+
+## Total session output
+
+- **40+ commits** across both sessions
+- **22 issues** created (#44-65)
+- **7 iteration fixes** shipped
+- **11 LinkedIn drafts** (4 from session 1 + 7 from session 2)
+- **2 new standards** (branch-stacking, data-management)
+- **1 new skill** (/autonomous)
+- **10 agent definitions** updated (luminaries + checkpointing)
+- **1 new rule** (session-artifacts)
+- First autonomous SDLC run: screenshots → working CRM in one POA session
+
 ## Key files changed
 
-- `strategy/agent-choreography.md` (new, 12 sections)
+- `strategy/agent-choreography.md` (new, 12+ sections)
 - `standards/branch-stacking.md` (new)
+- `standards/data-management.md` (new)
 - `.claude/skills/autonomous/SKILL.md` (new, replaced /orchestrate)
 - `.claude/agents/*.md` (all 10 updated with luminaries + checkpointing)
 - `.claude/rules/branching.md` (updated with stacking reference)
+- `.claude/rules/session-artifacts.md` (new — fires at all levels)
+- `.claude/rules/schema-management.md` (updated with post-merge MUST gate)
+- `.claude/hooks/auto-save-idle.sh` (SESSION_LOCK check)
+- `standards/frontend-stack.md` (Tailwind v4 symlink exclusion)
