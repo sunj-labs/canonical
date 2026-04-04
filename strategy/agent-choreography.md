@@ -228,11 +228,18 @@ Orchestrator reads the iteration plan. Each iteration:
 
        → activates Reviewer (haiku) — read-only
          Reviewer:
-           1. Evaluate PR against spec acceptance criteria
-           2. Verify test coverage
-           3. Check ADR compliance
-           4. Confirm Designer sign-off present
-           5. /architect-review if architecture-significant change
+           CRITICAL: Read the ACTUAL CODE, not specs or working directory.
+           - Use `gh pr diff NNN` to read the PR diff
+           - Use `gh pr view NNN --json files` to list changed files
+           - Use `git show branch:path/to/file` for full file reads
+           - NEVER review from the main working directory when Builder
+             used worktrees — the code is on the branch, not in your cwd
+           1. Read the PR diff (`gh pr diff NNN`)
+           2. Evaluate code against spec acceptance criteria
+           3. Verify test coverage (are new functions tested?)
+           4. Check ADR compliance in the actual implementation
+           5. Confirm Designer sign-off present (for UI branches)
+           6. /architect-review if architecture-significant change
            → HANDOFF: Approve / Request changes / Block
 
        → Builder merges on approval (squash merge to main)
