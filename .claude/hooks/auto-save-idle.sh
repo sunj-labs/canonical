@@ -16,6 +16,14 @@ for REPO in "${WATCHED_REPOS[@]}"; do
 
   cd "$REPO"
 
+  # Skip if an autonomous session is active — the agent owns commits
+  # during autonomous sessions. Auto-save checkpoints on feature branches
+  # cause merge conflicts when the agent rebases after squash merges.
+  if [ -f "$REPO/.claude/SESSION_LOCK" ]; then
+    echo "$(date): Skipping $REPO — SESSION_LOCK present (autonomous session active)"
+    continue
+  fi
+
   # Check for uncommitted changes (excluding .DS_Store)
   DIRTY=$(git status --porcelain 2>/dev/null | grep -v '\.DS_Store' | grep -v 'SESSION_LOCK' | grep -v 'LAST_SAVE' | head -5)
   if [ -z "$DIRTY" ]; then
