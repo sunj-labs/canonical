@@ -21,5 +21,17 @@ After DB reset:
 - Run any seed scripts
 - Test auth by signing in
 
+After merging a branch with schema changes (MUST — not optional):
+1. `npx prisma generate` — regenerate client from new schema
+2. Restart dev server — cached Prisma client won't pick up new models
+3. If DB was reset: run seed scripts for new entities
+4. Verify: new model is accessible via `prisma.[model].findMany()`
+5. If the merge includes new entities: seed test data (factories,
+   not hardcoded — see standards/data-management.md)
+
+This is a MUST gate. Skipping prisma generate after a schema merge
+causes runtime crashes: "Cannot read properties of undefined (reading
+'findMany')". The Prisma client literally does not know the model exists.
+
 The session-start hook checks for schema drift. If detected, create the
 missing migration before writing code.

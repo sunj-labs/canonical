@@ -505,6 +505,7 @@ rationale. MAY gates are best practice.
 | Handoff artifact | Every role transition | Substrate artifact at known path. No verbal state. | Orchestrator |
 | Phase-state update | Every checkpoint (see Section 10) | `docs/phase-state.md` reflects current reality | Orchestrator |
 | Artifact verification | After claiming to produce any artifact | Verify the file exists at the claimed path. Read the first few lines to confirm it's not empty. If the path is wrong or the file doesn't exist, fix it before reporting completion. Never claim an artifact was produced without verifying. | All agents |
+| Prisma generate after schema merge | After merging any branch with Prisma schema changes | Run `npx prisma generate`, restart dev server, verify new model is accessible. Skipping causes runtime crash. | Builder |
 
 ### SHOULD gates — defer only with documented rationale
 
