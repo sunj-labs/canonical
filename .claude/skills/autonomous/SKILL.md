@@ -122,10 +122,21 @@ Ready for: core ✅ | standard ⚠️ (needs: phase-state, iteration bet, risk r
 
 ### 3. Show next steps
 
-Based on readiness, tell the operator what to do:
-- "You're ready at core. To unlock standard, run `/autonomous start standard`."
-- "You're ready at standard. To start an autonomous session, run `/autonomous start`."
-- "Missing manifest — run `/autonomous start` to create one interactively."
+**MUST gates apply at ALL levels** (core, standard, full):
+/temperance before building, /verify after, /diagnose before fixing,
+tests with code, chronicle at phase transitions. These are not optional
+at any level. The level choice controls which agents are active, not
+which gates fire.
+
+Based on readiness, tell the operator what to do. Use the AskUserQuestion
+tool to offer numbered choices — don't make them type commands:
+1. "Stay at core — you drive, substrate assists"
+2. "Upgrade to standard — structured iterations with shaping + design"
+3. "Upgrade to full — complete ceremony with all 10 agents"
+
+Note: stale artifacts (overdue chronicles, architect reviews) will be
+resolved automatically during the `/autonomous start` boot sequence.
+Don't present them as blockers — say "resolved during boot."
 
 ---
 
@@ -358,6 +369,18 @@ After level is chosen, use AskUserQuestion to confirm execution mode and gating:
 > 1. **human-gated** (default) — Pauses between phases for your approval.
 > 2. **orchestrator-gated** — Chains through all phases without pausing. Review PRs after.
 
+If the operator selects **orchestrator-gated**, check and advise:
+
+> Orchestrator-gated mode runs without pausing for approval. This requires
+> `--dangerously-skip-permissions` so the agent can write files, commit,
+> and run commands without prompting.
+>
+> If this session wasn't started with that flag, you'll need to exit and
+> restart: `claude --dangerously-skip-permissions`
+>
+> A danger mode summary will be written at session end documenting all
+> autonomous decisions made.
+
 #### Step 2: Scaffold — manifest
 
 Read `substrate.config.md`. Three cases:
@@ -488,25 +511,25 @@ For **standard/full** (formal format), prompt with explanations:
 > broker contact to logged interaction drops below 2 minutes." This is
 > what the PM watches to know if the iteration proved its value.)
 >
-> **What's the appetite?**
-> (Two numbers: a cost ceiling in dollars and a turn limit.
+> **Turn limit?**
+> (The cost ceiling was already set in the manifest (Step 2). The turn
+> limit is the remaining piece.
 >
-> **Cost ceiling** governs API burst usage — tokens consumed when the
-> Orchestrator spawns subagents or runs headless agents. Your Max plan
-> covers all interactive Pro usage (conversations in Claude Code). The
-> burst pool is separate — a $25 pool that replenishes when it drops
-> to $10. The ceiling prevents a runaway session from draining it.
-> - At core level (you driving, no subagent spawning), burst is typically $0
-> - At standard/full, each subagent spawn costs burst tokens
-> - $8 is reasonable for one iteration; $12 for multi-agent sessions
+> Based on your configuration, here's my recommendation:
 >
-> **Turn limit** is a hard stop on agent turns before the Orchestrator
-> pauses and reports. Prevents infinite loops.
-> - 30 turns for a focused iteration
-> - 50 turns for multi-branch autonomous work
+> **Cost ceiling**: already set to $[read from manifest]. Sequential mode
+> = $0 burst (Max plan covers everything). Parallel mode = burst tokens
+> per subagent spawn.
+>
+> **Recommended turn limit** based on phase and execution mode:
+> - Inception (artifacts, not code): 50 turns
+> - Elaboration (ADRs, design, prototypes): 40 turns
+> - Construction (code, tests, PRs): 30 turns per branch stack
+> - Transition (deploy, release notes, retro): 20 turns
 >
 > The agent will scope DOWN to fit — fixed budget, variable scope.
-> Example: "$8 cost ceiling, 30 turn limit.")
+>
+> Accept the recommendation, or enter a custom turn limit.)
 >
 > **Any reference material?** (optional)
 > (Screenshots, mockups, prior art, inspiration — anything the Shaper
