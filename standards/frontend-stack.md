@@ -59,6 +59,16 @@ prisma/
 - Pages use App Router conventions (`/app/page.tsx`, `/app/layout.tsx`).
 - Design tokens from `platform-docs/design/design-tokens.css` map to Tailwind config.
 - No external component libraries beyond shadcn/ui. You own every component.
+- **Tailwind v4 + canonical symlinks**: Tailwind v4's `@import "tailwindcss"`
+  auto-scans all project files. Symlinks in `.claude/skills/` that point to
+  `../canonical/` cause Turbopack to follow paths outside the project root
+  and crash. Add this to `globals.css` after the import:
+  ```css
+  @import "tailwindcss";
+  @source not "../../.claude";
+  ```
+  This excludes the `.claude/` directory from Tailwind's content scanning.
+  The canonical-sync script should check for this and warn if missing.
 - Tools are registered in `src/tools/registry.ts`. Every tool is a typed function with metadata.
 - Prisma schema is the single source of truth for database structure.
 - Environment variables in `.env.local` (local) and Docker env (production). Never committed.
