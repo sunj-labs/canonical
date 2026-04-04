@@ -5,3 +5,6 @@
 .claude/SESSION_LOCK
 .claude/LAST_SAVE
 .claude/projects/*/screenshots/
+
+# SDLC trace logs (mechanical hook output, local only)
+docs/sdlc-traces/
