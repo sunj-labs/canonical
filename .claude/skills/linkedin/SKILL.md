@@ -33,7 +33,28 @@ Sanjay's target audience and brand positioning.
 - **Bezos/Jassy/Collison tone.** Calm, analytical, operator-grade. No AI hype.
 - **Structure**: Hook → Setup → Body (with → arrows) → Takeaway
 - **600-1200 words** per post
-- **3 posts per session** — different angles on the same work
+- **3-7 posts per session** — different angles on the same work. More is fine
+  if the session produced multiple notable moments.
+
+## Audience recommendations table (MUST — include in every draft file)
+
+Every draft file must start with a master audience recommendations table:
+
+```markdown
+| # | Title | Primary audience | Hook strength | Publish priority |
+|---|-------|-----------------|--------------|-----------------|
+| 1 | [title] | [audience] — "[angle]" | Weak/Medium/Strong/Very strong/Strongest | [priority or "Hold"] |
+```
+
+For each post, specify:
+- **Primary audience**: PE partners, CPTOs, eng leaders, board, technical founders, QA leads, DevOps
+- **Hook strength**: rate honestly. "Very strong" = contrarian or cautionary. "Strongest" = thought leadership.
+- **Publish priority**: recommended sequence with rationale, or "Hold" for article/longer form
+- **Overlap notes**: if two posts cover similar ground, recommend which to publish and which to hold
+
+End the table with:
+- **Recommended publish sequence** with rationale (e.g., "contrarian hook → framework → honesty → depth")
+- **Hold for articles** — posts that work better as longer LinkedIn articles
 
 ## When a concept needs technical explanation
 
@@ -48,9 +69,17 @@ Weave the Feynman explanation into the post or note it as a comment-thread follo
 
 ## Output
 
-1. Write drafts to `docs/linkedin-drafts/YYYY-MM-DD.md`
-2. Push to Google Doc:
+1. Check for gaps: when was the last LinkedIn draft? Are there missed
+   sessions? **Backfill those FIRST, oldest to newest** (per session-artifacts rule).
+2. Write drafts to `docs/linkedin-drafts/YYYY-MM-DD.md` with audience
+   recommendations table at the top
+3. Push to Google Doc — in chronological order (oldest first):
    ```bash
-   cd ~/src/sunj-labs/poa && GDOC_LINKEDIN_ID="1b1Gs8CDfOVF5D0ZaIswMWfW9JqQEgx0Zk409I9YfY7I" npx tsx scripts/push-to-gdoc.ts --file ~/src/sunj-labs/platform-docs/docs/linkedin-drafts/YYYY-MM-DD.md
+   # Read GDOC_LINKEDIN_ID from substrate.config.md or project memory
+   # If not configured, check for push-to-gdoc.ts script in the repo
+   cd ~/src/sunj-labs/poa && npx tsx scripts/push-to-gdoc.ts --file [draft path]
    ```
-3. Note in the chronicle that posts were drafted and pushed
+4. **Verify the push succeeded** — check the output for "Appended N chars"
+5. Note in the chronicle that posts were drafted and pushed
+6. If Google Doc push fails (no script, no auth): drafts stay local in
+   `docs/linkedin-drafts/`. This is acceptable — the content exists.
