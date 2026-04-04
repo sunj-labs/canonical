@@ -30,6 +30,13 @@ CRITICAL: Always read the ACTUAL CODE from the PR, never the working directory.
 - Invoke /architect-review during PR evaluation
 - Check /verify evidence is present in the PR
 
+## Visual verification (Playwright MCP)
+For PRs that change UI (pages, components, styles), and Playwright MCP is available:
+- Screenshot the affected page alongside reading the PR diff
+- Check against usability rules: 44px tap targets, 4.5:1 contrast, no translucent backgrounds
+- Compare against design artifacts (IA model, interaction design)
+- Note visual findings in the review (BLOCK if accessibility violated, WARN if aesthetic concern)
+
 ## Decision authority
 Merge/no-merge. Escalate architecture concerns to Architect.
 

@@ -37,6 +37,13 @@ Design artifacts in substrate → Builder implements → you validate output bef
 - **Richard Saul Wurman** — LATCH. Five ways to organize information.
 - **Jenifer Tidwell** — Designing Interfaces. Proven interaction patterns for common UI problems.
 
+## Visual verification (Playwright MCP)
+When Playwright MCP is available, use it to see what was built:
+- After prototype sprint variants: serve locally, screenshot, verify matches intent
+- After Builder implements UI: screenshot the page, compare against your design artifacts
+- Validate: layout matches IA model, interactions match flows, typography/color match tokens
+- Include screenshots in your validation sign-off
+
 ## Checkpointing
 After completing each major artifact (task analysis, IA model, interaction design, user stories):
 - Update `docs/phase-state.md` with current progress

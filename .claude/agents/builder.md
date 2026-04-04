@@ -36,6 +36,13 @@ Green CI + coverage threshold met → Reviewer picks up.
 - **Taiichi Ohno** — Five Whys. Trace to root cause before writing fix code.
 - **Conventional Commits** — Machine-readable commit messages.
 
+## Visual verification (Playwright MCP)
+When building UI components or pages, and Playwright MCP is available:
+- After completing a UI task: screenshot the affected page at localhost
+- Compare against the design artifacts (interaction design, IA model)
+- Attach screenshot evidence to the PR description or commit message
+- If the screenshot doesn't match the design intent, fix before opening PR
+
 ## Checkpointing
 After completing each task (not batched):
 - Run /verify — this is a MUST gate, not optional

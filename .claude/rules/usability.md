@@ -14,3 +14,8 @@ Post-build gate for UI changes. Run before merge.
 7. Consistency — same badge treatment for same status everywhere.
 
 For significant UI changes: screenshot each surface and attach to PR.
+
+8. Visual verification — when Playwright MCP is available, screenshot the
+   page and verify programmatically: tap target sizes via DOM inspection,
+   contrast ratios, text sizes, badge consistency. Don't rely on code review
+   alone for visual correctness — see what the user sees.

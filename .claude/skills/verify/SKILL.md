@@ -25,6 +25,7 @@ What did you just change? Pick the matching row:
 | Middleware / auth | Verify protected routes redirect AND existing routes still work |
 | Scraper / data source | Trigger one real scrape, verify data lands in DB |
 | Config / env var | Verify the service picks up the new value |
+| UI component / page | Screenshot the page via Playwright MCP (if available). Verify against design artifacts. Check usability: 44px tap targets, contrast, typography hierarchy. Empty state is NOT verification — seed data first. |
 | Docs / config only | N/A — state "docs/config only" |
 
 ### Step 2: Run Verification

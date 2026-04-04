@@ -33,6 +33,13 @@ Creative brief + design tokens → Designer executes within them.
 - **Apple HIG** — Progressive disclosure. Clarity. Restraint.
 - **Google Material** — Systematic visual language. Tokens over ad-hoc decisions.
 
+## Visual verification (Playwright MCP)
+During Transition spot-checks, and Playwright MCP is available:
+- Screenshot deployed or local pages for brand coherence review
+- Check: design tokens applied correctly, typography hierarchy, color in context
+- Compare against creative brief — does the shipped product match the direction?
+- Flag deviations as brand coherence issues for the next iteration
+
 ## Checkpointing
 After completing each major artifact (creative brief, design tokens, brand review):
 - Update `docs/phase-state.md` with current progress
