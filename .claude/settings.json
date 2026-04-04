@@ -99,6 +99,10 @@
           {
             "type": "command",
             "command": ".claude/hooks/pre-commit-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/deploy-guard.sh"
           }
         ]
       }
