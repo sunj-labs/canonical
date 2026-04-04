@@ -52,6 +52,17 @@ High-value moments for LinkedIn:
 - Design pushback (Designer vs PM)
 - Quantified results (N agents, M minutes, K artifacts)
 
+Every draft file MUST include an **audience recommendations table**:
+
+| Post | Primary audience | Hook strength | Publish priority |
+|------|-----------------|--------------|-----------------|
+
+Target audiences: PE partners, executive search leaders, board-level
+operators, CPTOs, technical founders, eng leaders/managers.
+Rate hook strength (weak/medium/strong/very strong/strongest).
+Recommend a publish sequence with rationale.
+Note overlapping posts and recommend which to publish vs hold.
+
 ## This rule exists because
 
 Agents forget to write session artifacts in long sessions, especially
