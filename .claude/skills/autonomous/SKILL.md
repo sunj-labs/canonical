@@ -139,7 +139,25 @@ Ready for: core ✅ | standard ⚠️ (needs: phase-state, iteration bet, risk r
   They may conflict with dev server." Don't just list PIDs with no guidance.
 - Auto-save checkpoint files (.test-baseline, etc.) — transient, not readiness-relevant
 
-### 3. Show next steps
+### 3. Show available capabilities by level
+
+Show what unlocks at each level — not just agents, but skills and
+workflows that become available:
+
+| Level | Unlocks |
+|-------|---------|
+| core | /temperance, /verify, /diagnose, /chronicle — you drive, substrate assists |
+| standard | + /prototype-sprint (2-3 visual variants with different aesthetic directions before committing to a build), /canvas, /spec, /architect-review, /jtbd-tasks — structured iterations with shaping and design |
+| full | + /deploy-prod, /release-notes, /retro — full ceremony with all 10 agents |
+
+**Prototype sprint** (standard+): During Elaboration, you can run
+`/prototype-sprint` to compare 2-3 visual directions with different
+dominant luminaries (e.g., Norman's affordance vs Lupton's storytelling
+vs Apple HIG restraint). You pick the direction before investing in
+full Construction. This requires standard level because it activates
+the Designer agent.
+
+### 4. Show next steps
 
 **MUST gates apply at ALL levels** (core, standard, full):
 /temperance before building, /verify after, /diagnose before fixing,
@@ -361,6 +379,42 @@ This is where autonomous work begins.
    - For a greenfield repo, use the generic examples from this document
    This makes the prompts feel like a conversation with someone who
    knows the project, not a generic template.
+
+5. **Smart defaults — reduce unnecessary confirmations.**
+   If an artifact already exists and hasn't changed since the last
+   session, skip the "Does this look right?" confirmation — just
+   report that it exists and move on. Only prompt for confirmation
+   when creating NEW artifacts or when the existing state looks stale.
+
+   Artifacts that can be auto-accepted:
+   - substrate.config.md: exists, same level → skip. Different level → prompt.
+   - phase-state.md: exists, recent update → skip. Stale → prompt.
+   - Iteration bet: exists, matches current work → skip. New bet needed → prompt.
+   - Risk register: exists → skip (surface top risks, don't re-ask).
+
+6. **Recommend level based on repo state.**
+   Don't just list the three levels — recommend one based on what exists:
+   - No substrate artifacts, few commits → recommend core
+   - Has canvas/spec, active issues, iteration history → recommend standard
+   - Has deploy targets, CI pipeline, production users → recommend full
+   State: "Based on [evidence], I'd recommend [level]. Agree, or choose different?"
+
+7. **Error recovery guidance.**
+   If any boot step fails, don't just say "FAIL." Provide the fix:
+   - Manifest missing → "I'll create one interactively."
+   - Phase-state missing → "I'll scaffold it — need to know project phase."
+   - Broken symlinks → "Run boot-canonical.sh to re-sync."
+   - Git auth failed → "Run `! gh auth login` to re-authenticate."
+   - Stale lock → "Lock is N hours old. Safe to clear? [Yes/No]"
+
+8. **Permission pre-check for orchestrator-gated mode.**
+   Before starting the boot sequence, verify that bypass permissions
+   is enabled AND that `.claude/` subdirectories (skills/, agents/,
+   rules/) are authorized. If not, warn the operator ONCE at the top
+   and explain how to approve:
+   "Orchestrator-gated mode needs write access to .claude/ subdirectories.
+   You'll see 2-3 permission prompts — select 'always allow from this
+   project' on each. After that, the session runs unattended."
 
 ### Step-by-step detail
 
