@@ -295,6 +295,8 @@ Orchestrator reads the iteration plan. Each iteration:
        → Builder merges on approval (squash merge to main)
 
   4. ITERATION CLOSE
+     → Orchestrator reports cost: turns used, duration, burst spend
+       (update phase-state.md cost tracking table per cost-governance rule)
      → Orchestrator checks: appetite consumed? scope completed?
      → PM evaluates viability signal
      → If more iterations planned → loop to step 1
