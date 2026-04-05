@@ -18,7 +18,7 @@
 | 4 | Twelve Failures and a Methodology | CTOs, eng VPs | Very strong — radical honesty | Credibility: show what broke |
 | 5 | The Agents Read Christensen | Board-level, PE | Strongest — intellectual depth | Differentiation: why this is different |
 | 6 | See It Before You Build It | Technical founders, designers | Strong — visual, tangible | Application: the prototype sprint |
-| 7 | The Color Your Mother Sees | Creative directors, CPTOs | Strong — emotional, universal | Depth: where taste gets specific |
+| 7 | The Color They Actually See | Creative directors, CPTOs | Strong — emotional, universal | Depth: where taste gets specific |
 | 8 | What Autonomous Actually Means | PE partners, board, CPTOs | Strongest — synthesis | Closer: the operating model |
 
 **Publish cadence**: 2 per week for 4 weeks. Mon/Thu.
@@ -32,7 +32,7 @@ I manage a team of ten. An Architect who writes ADRs and builds C4 diagrams. A D
 
 None of them are human.
 
-I'm a solo operator with a day job. The platform I'm building — a deal sourcing tool for my family's investment partnership — has the governance infrastructure of a 40-person engineering organization. Phase gates. Risk registers. Iteration bets with cost ceilings. Architectural decision records. A usability standard enforced at every commit.
+I'm a solo operator with a day job. The platform I'm building — a deal sourcing tool for a multi-generational family evaluating small business acquisitions — has the governance infrastructure of a 40-person engineering organization. Phase gates. Risk registers. Iteration bets with cost ceilings. Architectural decision records. A usability standard enforced at every commit.
 
 The AI agents didn't make this possible. The *methodology* made this possible. The agents are the runtime. The methodology is the product.
 
@@ -170,13 +170,13 @@ This is how professional design teams work. They diverge before they converge. T
 
 ---
 
-## POST 7: The Color Your Mother Sees
+## POST 7: The Color They Actually See
 
-Our platform has two users. Me — a technology executive evaluating business acquisitions. And my mother — a 76-year-old woman reviewing the same deals on her phone.
+Our platform has two types of users. Technical operators evaluating business acquisitions on desktop. And aging family members reviewing the same information on their phones.
 
 When I designed the badge system, I chose translucent color fills. `bg-danger/10` for risk indicators. `bg-success/5` for positive signals. They looked clean. Modern. Sophisticated.
 
-My mother couldn't read them.
+The non-technical stakeholders couldn't read them.
 
 This is where color *theory* and color *psychology* diverge. Josef Albers tells you that color is relative — the same blue reads differently next to gray than next to orange. That's perception. It answers: "How does this color look?"
 
@@ -186,12 +186,12 @@ Faber Birren tells you that color preferences change with age. Children prefer w
 
 Our Creative Director agent now boots with all three. When it chooses badge colors, it's not just checking WCAG contrast ratios. It's asking:
 - Will this communicate urgency? (Heller)
-- Will this be visible to a 76-year-old? (Birren)
+- Will this be visible to someone with declining visual acuity? (Birren)
 - Does this color work next to the other badges on this row? (Albers)
 
 The gap between "accessible" and "effective" is color psychology. Most design systems stop at accessible. The ones that work stop at *understood*.
 
-Solid fills. 4.5:1 minimum contrast. 44px tap targets. Not because the framework requires it. Because Mom is the test case.
+Solid fills. 4.5:1 minimum contrast. 44px tap targets. Not because the framework requires it. Because the least technical stakeholder is the test case.
 
 ---
 
