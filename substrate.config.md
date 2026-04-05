@@ -33,6 +33,13 @@ budget:
   iteration_ceiling: $0        # sequential mode — no burst usage
   warning_threshold: 75%       # Orchestrator surfaces status at this %
 
+## LinkedIn
+#
+# Google Doc ID for LinkedIn post drafts. Each repo has its own doc.
+# If not set, drafts stay local in docs/linkedin-drafts/.
+#
+linkedin_doc_id: 1b1Gs8CDfOVF5D0ZaIswMWfW9JqQEgx0Zk409I9YfY7I
+
 ## Deployment targets
 #
 # Canonical is a documentation repo. No application to deploy.

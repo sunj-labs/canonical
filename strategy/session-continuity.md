@@ -274,15 +274,21 @@ docs/
 
 ### 3. LinkedIn post destination
 
-The user must provide the Google Doc URL where LinkedIn post drafts will
-be written. Store in project memory:
+Each repo configures its own Google Doc ID for LinkedIn drafts in
+`substrate.config.md` under the `linkedin_doc_id` field. This prevents
+cross-repo contamination (canonical drafts going to POA's doc, etc.).
 
-```
-LinkedIn post drafts → [Google Doc URL]
+```markdown
+# In substrate.config.md:
+linkedin_doc_id: <google-doc-id>
 ```
 
-If Google Auth is not yet configured, drafts go to
-`docs/linkedin-drafts/YYYY-MM-DD.md` as interim.
+If `linkedin_doc_id` is not set, drafts stay local in
+`docs/linkedin-drafts/YYYY-MM-DD.md`. The push-to-gdoc script reads
+the doc ID from substrate.config.md, not from hardcoded values in rules.
+
+The standard path for LinkedIn drafts is `docs/linkedin-drafts/` (not
+`docs/linkedin/`). All repos should use this path for consistency.
 
 ### 4. Platform-docs inheritance
 
