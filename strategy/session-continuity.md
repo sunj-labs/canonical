@@ -153,56 +153,70 @@ Summarize what was done last, what's open, and propose 1-3 items.
 
 ## Session End Protocol
 
-Every session ends with this sequence. The session-end hook reminds you,
-but you are responsible for completing it.
+Every session ends with this sequence. The `/session-end` skill is the
+primary implementation. The Stop hook calls it automatically, but it
+can also be invoked directly as a fallback.
 
-### 1. Clean working tree
+**Three tiers of obligation** — Must tier completes even if the session
+is dying. Should and May tiers fail gracefully without losing Must
+tier artifacts.
 
-All changes committed or stashed. No orphaned work.
+### Must tier (local, no network, always possible)
 
-### 2. Chronicle entry
+These steps MUST complete. They require no network and no external
+services. Target: < 10 seconds total.
 
-Write to the chronicle directory. Include:
-- Entry state (what was true at session start)
-- Work done (with commit refs)
-- Decisions made (with rationale)
-- Open threads (what's unfinished — this is the most important section)
-- Key files changed
+1. **Clean working tree** — commit or stash all changes. No orphaned work.
+2. **Chronicle entry** — write to the chronicle directory. Include:
+   entry state, work done (with commit refs), decisions made, open
+   threads (most important section), key files changed.
+3. **Memory update** — save anything learned that future sessions need.
+4. **Remove session lock** — `rm -f .claude/SESSION_LOCK`
 
-### 3. Memory update
+### Should tier (network needed, may fail)
 
-Save anything learned this session that future sessions need.
+These steps SHOULD complete but depend on network. Log failures
+visibly — never swallow with `2>/dev/null || true`.
 
-### 4. SDLC trace
+5. **Git push** — push committed work to remote.
+6. **Update phase-state.md** — clear active agents, update progress,
+   record cost tracking (turns, duration).
+7. **SDLC trace** — hooks append mechanical traces automatically.
+   If hooks aren't available, note which gates fired.
 
-Hooks append mechanical traces automatically. If hooks aren't available,
-manually note which gates fired and what happened.
+### May tier (conditional, environment-dependent)
 
-### 5. Danger mode summary (if applicable)
+Valuable but not critical. Skip without guilt if time is short.
 
-If the session used auto-complete or elevated permissions, write the
-compact audit trail: what was done autonomously, what decisions were
-made without human confirmation, any risks introduced.
+8. **Danger mode summary** (if session used auto-complete) — write
+   audit trail of autonomous decisions to
+   `docs/danger-mode-summaries/YYYY-MM-DD.md`.
+9. **LinkedIn post draft** (if session shipped something notable) —
+   draft to `docs/linkedin-drafts/YYYY-MM-DD.md`, push to Google Doc
+   if `linkedin_doc_id` is configured in `substrate.config.md`.
+10. **Release notes** (if user-facing changes deployed) — plain language
+    for the least technical user.
+11. **Next session guidance** — 1-2 sentences on what to pick up next.
+    Goes in chronicle's Open Threads section and in memory.
 
-### 6. LinkedIn post draft (if applicable)
+### Timeout guidance
 
-If the session shipped something worth sharing — a new feature, an
-architecture decision, a lesson learned — draft a LinkedIn post to the
-configured Google Doc. Format: hook → insight → takeaway → CTA.
+- Minimum Stop hook timeout: **30 seconds**
+- Must tier completes first (< 10s), so even if the hook times out
+  during Should/May, the critical artifacts are already written.
+- See `standards/hook-idempotency.md` for hook design rules.
 
-### 7. Release notes (if applicable)
+### Invocation paths
 
-If user-facing changes were deployed, write release notes in plain
-language for the least technical user (family member on a phone).
+| Path | When | Reliability |
+|------|------|-------------|
+| Stop hook → `/session-end` | Normal session end | High (but timeout-limited) |
+| User types `/session-end` | Manual fallback | Highest (no timeout) |
+| Session-start detects gaps | Next session recovery | Catches what was missed |
 
-### 8. Remove session lock
-
-Remove `.claude/SESSION_LOCK` if it exists.
-
-### 9. Next session guidance
-
-1-2 sentences on what to pick up next. This goes in the chronicle's
-Open Threads section and in memory.
+The system is designed so that no single path is the only way artifacts
+get written. If the hook fails, the user can invoke directly. If both
+fail, the next session's start protocol detects gaps and backfills.
 
 ---
 
