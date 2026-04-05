@@ -18,6 +18,58 @@ This rule applies at ALL process levels (core, standard, full).
 | Session ceiling approached | Warn operator. Complete current atomic unit of work. Do not start a new iteration. |
 | Replenish floor hit | Surface. Recommend deferring remaining iterations to next session. |
 
+## Cost tracking (all levels)
+
+Track cost at phase boundaries. The operator should never have to ask
+"what did this cost?" — the system tells them proactively.
+
+### At phase start (estimate)
+
+Before activating agents for a phase, estimate:
+- Number of subagent spawns planned (0 for sequential mode)
+- Estimated turns per agent based on phase and scope
+- Total estimated phase cost (burst + Pro plan time)
+- Remaining budget after this phase
+
+### At phase end (actuals)
+
+After a phase completes, report in phase-state.md:
+
+```markdown
+## Cost tracking
+| Phase | Agents | Turns | Burst cost | Duration | Notes |
+|-------|--------|-------|-----------|----------|-------|
+| Inception | Shaper, PM | 12 | $0 | 8m | Sequential — no burst |
+| Elaboration | Architect, Designer | 18 | $0 | 14m | Sequential |
+| Construction | Builder, Reviewer | 35 | $0 | 25m | 3 branches |
+| **Total** | | **65** | **$0** | **47m** | |
+
+Budget: $0 ceiling / $0 spent / on track
+```
+
+### At session end
+
+Include in the chronicle:
+- Total turns used
+- Total duration (approximate)
+- Cost per artifact produced (turns / artifacts)
+- Budget utilization (% of ceiling used, or "sequential — $0 burst")
+- Scope completed vs planned
+
+### Sequential mode
+
+Burst cost is $0 but Pro plan time still matters. Track:
+- Turn count per phase
+- Duration per phase (approximate)
+- These help calibrate future appetite estimates
+
+### Where to get cost data
+
+- Turn count: count conversation turns per phase
+- Duration: note timestamps at phase boundaries
+- Burst cost: relevant only in parallel mode (subagent spawns)
+- If exact data isn't available, estimate and note the method
+
 ## At core level (supervised sessions)
 
 Cost tracking is advisory, not enforced. The rules below still apply:

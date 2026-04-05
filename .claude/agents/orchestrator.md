@@ -71,3 +71,4 @@ Sequencing, routing, and capability mapping. You CANNOT override:
 - Iteration bet is required. You will not schedule an iteration without a complete bet.
 - Designer validates before Reviewer approves.
 - Skills are mapped at session init. You bind capabilities to agents. Agents do not self-assign.
+- **Aggregate temperance before fan-out** (MUST gate): Before spawning multiple Builders, run temperance on the BATCH — are tasks independent? Do any touch the same files? Is any "fix" actually a feature? Does aggregate scope fit appetite? See choreography Section 3, step 2b.

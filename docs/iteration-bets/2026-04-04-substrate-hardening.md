@@ -5,10 +5,11 @@
 **Primary luminary**: none — all luminaries equal (this is infrastructure, not UX)
 
 **Scope**:
-- 6 issues that improve operator trust and reduce autonomous session friction
-- #59 Cost tracking per phase (operator visibility into spend)
-- #46 Substrate self-test (validate wiring before autonomous runs)
+- 7 issues that improve operator trust and reduce autonomous session friction
+- #74 Aggregate temperance before parallel builder spawn (safety gate)
 - #56 Per-repo Google Doc ID (stops cross-contamination)
+- #46 Substrate self-test (validate wiring before autonomous runs)
+- #59 Cost tracking per phase (operator visibility into spend)
 - #72 Prototype sprint unlock language (discoverability)
 - #71 /autonomous UX refinements (reduce friction)
 - #45 Session-end resilience (/session-end as skill, tiered obligations)
