@@ -42,7 +42,7 @@ If yes:
 2. Create docs/linkedin-drafts/ if it doesn't exist
 3. Write draft to docs/linkedin-drafts/YYYY-MM-DD.md
 4. Push to Google Doc — push in chronological order (oldest first):
-   cd ~/src/sunj-labs/poa && GDOC_LINKEDIN_ID="1b1Gs8CDfOVF5D0ZaIswMWfW9JqQEgx0Zk409I9YfY7I" npx tsx scripts/push-to-gdoc.ts --file [draft path]
+   GDOC_LINKEDIN_ID="1b1Gs8CDfOVF5D0ZaIswMWfW9JqQEgx0Zk409I9YfY7I" npx tsx ~/src/sunj-labs/poa/scripts/push-to-gdoc.ts --file [draft path]
 4. Verify both the local file and Google Doc push succeeded
 
 High-value moments for LinkedIn:
