@@ -236,6 +236,27 @@ Orchestrator reads the iteration plan. Each iteration:
      → Builder (or Orchestrator at full level) writes stack manifest
      → Declare branches, dependencies, parallel-safety
 
+  2b. AGGREGATE TEMPERANCE (before fanning out work — MUST gate)
+     Before spawning ANY builders (parallel or sequential), the
+     Orchestrator runs temperance on the BATCH, not individual tasks:
+
+     → Are these tasks truly independent? Check for shared files.
+       If two tasks touch the same file → they are NOT parallel-safe.
+       Sequence them or combine into one branch.
+     → Is any task actually a new feature, not a fix?
+       A fix repairs broken behavior. A feature adds new capability.
+       Features need at minimum a light spec — route to Shaper, not Builder.
+     → What's the blast radius of doing all N at once?
+       Could failures in one task mask failures in another?
+     → Does the aggregate scope fit the declared appetite?
+       N tasks × estimated turns per task ≤ remaining appetite.
+       If not → descope before starting, not mid-flight.
+
+     This gate exists because individual Builder temperance checks
+     cannot see cross-task interactions. The POA incident (2026-04-04)
+     showed 4 parallel Builders spawned without aggregate scope review —
+     one "fix" was actually a feature, and two tasks touched the same files.
+
   3. EXECUTE — sequential or parallel per stack manifest
 
      For each branch:
@@ -535,6 +556,7 @@ rationale. MAY gates are best practice.
 | `/verify` after each task | After every build task, before commit | Run verification appropriate to change type | Builder |
 | Tests pass | Before every commit of source code | New exported function = new test. No "I'll add tests later." | Builder, Reviewer |
 | `/temperance` before non-trivial work | Before any implementation that touches >1 file or modifies behavior | Pause: simplest approach? brute-forcing? blast radius? | Builder |
+| Aggregate temperance before fan-out | Before spawning multiple Builders (parallel or sequential batch) | Are tasks independent? Shared files? Any features misclassified as fixes? Aggregate scope ≤ appetite? | Orchestrator |
 | `/diagnose` before any fix | Any observed failure, before writing fix code | Is/Is Not + Five Whys + Hypothesis. No retry without understanding. | Builder |
 | Chronicle at phase transition | Every phase transition + iteration end | Write to chronicle directory. Captures what the phase produced, decisions made, open threads. A role handoff within a phase updates phase-state; a phase transition writes a chronicle. | Orchestrator triggers, Closer writes |
 | Conventional commits | Every commit | Type: description, imperative mood, references issue | Builder |
